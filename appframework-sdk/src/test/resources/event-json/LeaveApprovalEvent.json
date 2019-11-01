@@ -1,0 +1,21 @@
+{
+  "ts": "1502199207.7171419", 
+  "uuid": "bc447199585340d1f3728d26b1c0297a",
+  "token": "41a9425ea7df4536a7623e38fa321bae", 
+  "type": "event_callback", 
+  "event": {
+    "app_id": "cli_xxx",
+    "tenant_key":"xxx",
+    "type": "leave_approval",
+    "instance_code": "xxx", 
+    "employee_id": "xxx",  
+    "start_time": 1502199207, 
+    "end_time": 1502199307,   
+    "leave_type": "xxx",      
+    "leave_unit": 1,          
+    "leave_start_time": "2018-12-01 12:00:00", 
+    "leave_end_time": "2018-12-02 12:00:00",   
+    "leave_interval": 7200,          
+    "leave_reason": "xxx"     
+  }
+}

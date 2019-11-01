@@ -1,0 +1,14 @@
+{
+  "uuid": "fe797023c814c79e0cb86aaeda19393d",  
+  "token": "fXUULfuzuTv7eijhM6D8gg6uTDoU3UN5",
+  "ts": "1571629670.184671",  
+  "type": "event_callback",  
+  "event": {
+    "app_id": "cli_xxx",
+    "instance_id": [
+      "b21d41d9-5aeb-4efc-8b7e-a9d6feede8ee"   
+    ],
+    "tenant_key": "736588c9260f175d",   
+    "type": "create_widget_instance"   
+  }
+}

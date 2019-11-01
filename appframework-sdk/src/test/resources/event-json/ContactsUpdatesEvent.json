@@ -1,0 +1,13 @@
+{
+  "uuid":"c4ca4238a0b923820dcc509a6f75849b",
+  "token": "41a9425ea7df4536a7623e38fa321bae", 
+  "ts": "1502199207.7171419", 
+  "type": "event_callback",   
+  "event": {
+    "type": "user_add",    
+    "app_id": "cli_xxx",
+    "tenant_key": "xxx",  
+    "open_id":"xxx" ,
+    "employee_id":"xxx"   
+  }
+}

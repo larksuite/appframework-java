@@ -1,0 +1,21 @@
+{
+  "ts": "1502199207.7171419", 
+  "uuid": "bc447199585340d1f3728d26b1c0297a", 
+  "token": "41a9425ea7df4536a7623e38fa321bae", 
+  "type": "event_callback", 
+  "event": {
+    "type":"order_paid",     
+    "app_id": "cli_xxx",
+    "order_id": "6704894492631105539", 
+    "price_plan_id": "price_9d86fa1333b8110c",  
+    "price_plan_type": "per_seat_per_month", 
+    "seats": 20, 
+    "buy_count":1, 
+    "create_time": "1502199207",
+    "pay_time": "1502199209",
+    "buy_type": "buy", 
+    "src_order_id": "6704894492631105539", 
+    "order_pay_price":10000,
+    "tenant_key": "2f98c01bc23f6847"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "token": "2g7als3DgPW6Xp1xEpmcvgVhQG621bFY",
+  "ts": "1558333396.853646",
+  "type": "event_callback",
+  "uuid": "040f043eaf63ad319b2f55d4a6b8f382",
+  "event": {
+    "app_id": "cli_xxx",
+    "chat_id": "oc_26b66a5eb603162b849f91bcd8815b20",
+    "operator": {
+      "open_id": "ou_2d2c0399b53d06fd195bb393cd1e38f2",
+      "user_id": "gfa21d92"
+    },
+    "tenant_key": "736588c9260f175c",
+    "type": "p2p_chat_create",
+    "user": {
+      "name": "张三",
+      "open_id": "ou_7dede290d6a27698b969a7fd70ca53da",
+      "user_id": "gfa21d92"
+    }
+  }
+}

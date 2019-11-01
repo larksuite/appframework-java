@@ -1,0 +1,18 @@
+{
+  "ts": "1502199207.7171419", 
+  "uuid": "bc447199585340d1f3728d26b1c0297a",
+  "token": "41a9425ea7df4536a7623e38fa321bae", 
+  "type": "event_callback", 
+  "event": {
+    "app_id": "cli_xxx",
+    "tenant_key":"xxx",
+    "type":"shift_approval",
+    "instance_code": "xxx", 
+    "employee_id": "xxx",  
+    "start_time": 1502199207, 
+    "end_time": 1502199307,   
+    "shift_time": "2018-12-01 12:00:00",    
+    "return_time": "2018-12-02 12:00:00",   
+    "shift_reason": "xxx"     
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "uuid": "c4ca4238a0b923820dcc509a6f75849b",
+  "token": "41a9425ea7df4536a7623e38fa321bae",
+  "ts": "1502199207.7171419",
+  "type": "event_callback",
+  "event": {
+    "app_id": "cli_xxx",
+    "chat_id": "oc_9e9619b938c9571c1c3165681cdaead5",
+    "operator": {
+      "open_id": "ou_18eac85d35a26f989317ad4f02e8bbbb",
+      "user_id": "ca51d83b"
+    },
+    "tenant_key": "736588c9260f175d",
+    "type": "add_user_to_chat",
+    "users": [
+      {
+        "name": "James",
+        "open_id": "ou_706adeb944ab1473b9fb3e7da2a40b68",
+        "user_id": "51g97a4g"
+      },
+      {
+        "name": "张三",
+        "open_id": "ou_7885357f9922aaa34001b190109e0b48",
+        "user_id": "6e125386"
+      }
+    ]
+  }
+}

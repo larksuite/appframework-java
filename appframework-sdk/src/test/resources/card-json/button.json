@@ -1,0 +1,13 @@
+{
+  "open_id": "ou_sdfimx9948345",
+  "user_id": "xxx",
+  "open_message_id": "om_abcdefg1234567890",
+  "tenant_key": "d32004232",
+  "action":
+  {
+    "value":{
+      "key":"value"
+    },
+    "tag": "button"
+  }
+}

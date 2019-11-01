@@ -1,0 +1,24 @@
+{
+  "token": "2g7als3DgPW6Xp1xEpmcvgVhQG621bFY",
+  "ts": "1558333396.853646",
+  "type": "event_callback",
+  "uuid": "040f043eaf63ad319b2f55d4a6b8f382",
+  "event": {
+    "app_id": "cli_xxx",
+    "chat_i18n_names": {
+      "en_us": "英文标题1",
+      "zh_cn": "中文标题"
+    },
+    "chat_name": "接口修改",
+    "chat_owner_employee_id": "ca51d83b",
+    "chat_owner_name": "fanlv",
+    "chat_owner_open_id": "ou_18eac85d35a26f989317ad4f02e8bbbb",
+    "open_chat_id": "oc_e520983d3e4f5ec7306069bffe672aa3",
+    "operator_employee_id": "ca51d83b",
+    "operator_name": "fanlv",
+    "operator_open_id": "ou_18eac85d35a26f989317ad4f02e8bbbb",
+    "owner_is_bot": false, 
+    "tenant_key": "736588c9260f175d",
+    "type": "add_bot" 
+  }
+}
