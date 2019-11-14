@@ -13,12 +13,25 @@ public class Header implements CardComponent {
 
     private Text title;
 
+    private TemplateColor templateColor;
+
     public Header(Text title) {
         this.title = title;
     }
 
+    public Header(Text text, TemplateColor templateColor){
+        this.title = text;
+        this.templateColor = templateColor;
+    }
+
     @Override
     public Object toObjectForJson() {
-        return MixUtils.newHashMap("title", title.toObjectForJson());
+        if (this.templateColor != null){
+
+            return MixUtils.newHashMap("title", title.toObjectForJson(),
+                    "template", templateColor.getColor());
+        }else {
+            return MixUtils.newHashMap("title", title.toObjectForJson());
+        }
     }
 }
