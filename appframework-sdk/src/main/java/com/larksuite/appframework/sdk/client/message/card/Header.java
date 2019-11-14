@@ -9,6 +9,8 @@ package com.larksuite.appframework.sdk.client.message.card;
 import com.larksuite.appframework.sdk.client.message.card.objects.Text;
 import com.larksuite.appframework.sdk.utils.MixUtils;
 
+import java.util.Map;
+
 public class Header implements CardComponent {
 
     private Text title;
@@ -26,12 +28,13 @@ public class Header implements CardComponent {
 
     @Override
     public Object toObjectForJson() {
+
+        Map headerMap = MixUtils.newHashMap("title", title.toObjectForJson());
         if (this.templateColor != null){
 
-            return MixUtils.newHashMap("title", title.toObjectForJson(),
-                    "template", templateColor.getColor());
-        }else {
-            return MixUtils.newHashMap("title", title.toObjectForJson());
+            headerMap.put("template", templateColor.getColor());
         }
+
+        return headerMap;
     }
 }
