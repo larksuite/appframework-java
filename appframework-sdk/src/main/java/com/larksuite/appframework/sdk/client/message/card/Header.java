@@ -29,7 +29,7 @@ public class Header implements CardComponent {
     @Override
     public Object toObjectForJson() {
 
-        Map headerMap = MixUtils.newHashMap("title", title.toObjectForJson());
+        Map<String, Object> headerMap = MixUtils.newHashMap("title", this.title.toObjectForJson());
         if (this.templateColor != null){
 
             headerMap.put("template", templateColor.getColor());
