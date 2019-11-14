@@ -13,18 +13,18 @@ import java.util.Map;
 
 public abstract class ActionElement extends Element {
 
-    private String actionName;
+    private String methodName;
 
     private Map<String, String> value = new HashMap<>(4);
 
-    public ActionElement(String tag, String actionName) {
+    public ActionElement(String tag, String methodName) {
         super(tag);
-        this.actionName = actionName;
-        CardActionUtils.setActionMethodName(value, actionName);
+        this.methodName = methodName;
+        CardActionUtils.setActionMethodName(value, methodName);
     }
 
-    public String getActionName() {
-        return actionName;
+    public String getMethodName() {
+        return methodName;
     }
 
     public Map<String, String> getValue() {

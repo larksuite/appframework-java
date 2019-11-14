@@ -14,9 +14,9 @@ public class CardActionUtils {
 
     public static final String ACTION_METHOD_NAME = "__METHOD__";
 
-    public static void setActionMethodName(Map<String, String> values, String actionName) {
+    public static void setActionMethodName(Map<String, String> values, String methodName) {
         if (values != null) {
-            values.put(ACTION_METHOD_NAME, actionName);
+            values.put(ACTION_METHOD_NAME, methodName);
         }
     }
 

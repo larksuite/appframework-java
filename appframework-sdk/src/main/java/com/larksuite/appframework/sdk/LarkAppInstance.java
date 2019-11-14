@@ -12,6 +12,7 @@ import com.larksuite.appframework.sdk.client.LarkClient;
 import com.larksuite.appframework.sdk.client.MiniProgramAuthenticator;
 import com.larksuite.appframework.sdk.core.App;
 import com.larksuite.appframework.sdk.core.InstanceContext;
+import com.larksuite.appframework.sdk.core.auth.TokenCenter;
 import com.larksuite.appframework.sdk.core.eventhandler.AppEventHandlerManager;
 import com.larksuite.appframework.sdk.core.eventhandler.AppTicketEventCallbackHandler;
 import com.larksuite.appframework.sdk.core.protocol.card.CardEvent;
@@ -59,6 +60,10 @@ public class LarkAppInstance {
 
     public LarkClient getLarkClient() {
         return instanceContext.getLarkClient();
+    }
+
+    public TokenCenter getTokenCenter() {
+        return instanceContext.getTokenCenter();
     }
 
     public MiniProgramAuthenticator getMiniProgramAuthenticator() {

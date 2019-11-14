@@ -20,8 +20,8 @@ public class Overflow extends ActionElement {
 
     private Confirm confirm;
 
-    public Overflow(String actionName, List<Option> options) {
-        super("overflow", actionName);
+    public Overflow(String methodName, List<Option> options) {
+        super("overflow", methodName);
         this.options = options;
     }
 

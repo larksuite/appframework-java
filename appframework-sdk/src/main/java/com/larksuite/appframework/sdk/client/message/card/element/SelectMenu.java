@@ -25,8 +25,8 @@ public abstract class SelectMenu extends ActionElement {
 
     private Confirm confirm;
 
-    public SelectMenu(String tag, String actionName) {
-        super(tag, actionName);
+    public SelectMenu(String tag, String methodName) {
+        super(tag, methodName);
     }
 
     public SelectMenu setPlaceholder(Text p) {
