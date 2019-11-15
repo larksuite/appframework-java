@@ -52,7 +52,7 @@ class LarkClientInternalTest {
     @Test
     public void sendChatMessage() throws LarkClientException {
         Message message = new TextMessage("message content");
-        String messageId = larkClient.sendChatMessage(MessageDestinations.ChatId(Constants.CHART_ID), message);
+        String messageId = larkClient.sendChatMessage(MessageDestinations.chatId(Constants.CHART_ID), message);
         Assertions.assertEquals(messageId, Constants.MESSAGE_ID);
     }
 

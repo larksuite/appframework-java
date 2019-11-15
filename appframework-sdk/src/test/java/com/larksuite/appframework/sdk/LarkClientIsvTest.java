@@ -53,7 +53,7 @@ class LarkClientIsvTest {
     @Test
     public void sendChatMessageIsv() throws LarkClientException {
         Message message = new TextMessage("message content");
-        String messageId = larkClient.sendChatMessageIsv(MessageDestinations.ChatId(Constants.CHART_ID), message, Constants.TENANT_KEY);
+        String messageId = larkClient.sendChatMessageIsv(MessageDestinations.chatId(Constants.CHART_ID), message, Constants.TENANT_KEY);
         Assertions.assertEquals(messageId, Constants.MESSAGE_ID);
     }
 
