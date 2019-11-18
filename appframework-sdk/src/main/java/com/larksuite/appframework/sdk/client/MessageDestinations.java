@@ -12,15 +12,15 @@ public class MessageDestinations {
         return new OpenId(id);
     }
 
-    public static MessageDestination ChatId(String id) {
+    public static MessageDestination chatId(String id) {
         return new ChatId(id);
     }
 
-    public static MessageDestination UserId(String id) {
+    public static MessageDestination userId(String id) {
         return new UserId(id);
     }
 
-    public static MessageDestination Email(String id) {
+    public static MessageDestination email(String id) {
         return new Email(id);
     }
 

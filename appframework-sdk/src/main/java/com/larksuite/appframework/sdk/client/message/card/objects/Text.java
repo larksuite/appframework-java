@@ -27,11 +27,11 @@ public class Text implements CardComponent {
     private Integer lines;
 
     public Text(Mode m, String content) {
-        this(m, content, 1);
+        this(m, content, 0);
     }
 
     public Text(Mode m, I18n i18n) {
-        this(m, i18n, 1);
+        this(m, i18n, 0);
     }
 
     public Text(Mode m, String content, int lines) {

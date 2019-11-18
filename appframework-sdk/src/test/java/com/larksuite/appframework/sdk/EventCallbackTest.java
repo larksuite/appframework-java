@@ -12,8 +12,6 @@ import com.larksuite.appframework.sdk.client.LarkClient;
 import com.larksuite.appframework.sdk.core.App;
 import com.larksuite.appframework.sdk.core.InstanceContext;
 import com.larksuite.appframework.sdk.core.auth.AppTicketStorage;
-import com.larksuite.appframework.sdk.core.auth.TokenCenter;
-import com.larksuite.appframework.sdk.core.eventhandler.AppEventHandlerManager;
 import com.larksuite.appframework.sdk.core.protocol.OpenApiClient;
 import com.larksuite.appframework.sdk.core.protocol.event.impl.AddBotEvent;
 import com.larksuite.appframework.sdk.core.protocol.event.impl.AddUserToChatEvent;
@@ -61,9 +59,8 @@ public class EventCallbackTest {
 
         App app = new App(Constants.APP_NAME, Constants.APP_ID, Constants.APP_SECRET, null, "lPIl3TCujWxoxOaqc9SNXXyPOAIpXBd8", true);
 
-        InstanceContext ic = new InstanceContext();
-        ic.setApp(app);
-        ic.setTokenCenter(new TokenCenter(openApiClient, ic.getApp(), appTicketStorage));
+        InstanceContext ic = new InstanceContext(app, openApiClient);
+        ic.createTokenCenter(appTicketStorage);
 
         new LarkClient(ic, openApiClient);
 
@@ -73,8 +70,8 @@ public class EventCallbackTest {
 
     @Test
     public void testAppOpenEvent() {
-        AppEventHandlerManager m = new AppEventHandlerManager();
-        m.registerEventCallbackHandler(AppOpenEvent.class, (c, e) -> {
+        AppEventListener m = LarkAppInstanceFactory.createAppEventListener();
+        m.onEvent(AppOpenEvent.class, (c, e) -> {
 
             Assertions.assertEquals(e.getAppId(), "cli_xxx");
             Assertions.assertEquals(e.getTenantKey(), "xxx");
@@ -100,8 +97,8 @@ public class EventCallbackTest {
 
     @Test
     public void testApprovalEvent() {
-        AppEventHandlerManager m = new AppEventHandlerManager();
-        m.registerEventCallbackHandler(ApprovalEvent.class, (c, e) -> {
+        AppEventListener m = LarkAppInstanceFactory.createAppEventListener();
+        m.onEvent(ApprovalEvent.class, (c, e) -> {
 
             Assertions.assertEquals(e.getDefinitionCode(), "xxx");
             Assertions.assertEquals(e.getDefinitionName(), "xxx");
@@ -116,8 +113,8 @@ public class EventCallbackTest {
 
     @Test
     public void testAppStatusChangeEvent() {
-        AppEventHandlerManager m = new AppEventHandlerManager();
-        m.registerEventCallbackHandler(AppStatusChangeEvent.class, (c, e) -> {
+        AppEventListener m = LarkAppInstanceFactory.createAppEventListener();
+        m.onEvent(AppStatusChangeEvent.class, (c, e) -> {
 
             Assertions.assertEquals(e.getStatus(), "start_by_tenant");
             return "{}";
@@ -128,8 +125,8 @@ public class EventCallbackTest {
 
     @Test
     public void testAddBotEvent() {
-        AppEventHandlerManager m = new AppEventHandlerManager();
-        m.registerEventCallbackHandler(AddBotEvent.class, (c, e) -> {
+        AppEventListener m = LarkAppInstanceFactory.createAppEventListener();
+        m.onEvent(AddBotEvent.class, (c, e) -> {
 
             Assertions.assertEquals(e.getChatName(), "接口修改");
             Assertions.assertEquals(e.getChatOwnerEmployeeId(), "ca51d83b");
@@ -152,8 +149,8 @@ public class EventCallbackTest {
 
     @Test
     public void testRemoveBotEvent() {
-        AppEventHandlerManager m = new AppEventHandlerManager();
-        m.registerEventCallbackHandler(RemoveBotEvent.class, (c, e) -> {
+        AppEventListener m = LarkAppInstanceFactory.createAppEventListener();
+        m.onEvent(RemoveBotEvent.class, (c, e) -> {
 
             Assertions.assertEquals(e.getChatName(), "接口修改");
             Assertions.assertEquals(e.getChatOwnerEmployeeId(), "ca51d83b");
@@ -176,8 +173,8 @@ public class EventCallbackTest {
 
     @Test
     public void testUserAddEvent() {
-        AppEventHandlerManager m = new AppEventHandlerManager();
-        m.registerEventCallbackHandler(UserAddEvent.class, (c, e) -> {
+        AppEventListener m = LarkAppInstanceFactory.createAppEventListener();
+        m.onEvent(UserAddEvent.class, (c, e) -> {
 
             Assertions.assertEquals(e.getOpenId(), "xxx");
             Assertions.assertEquals(e.getEmployeeId(), "xxx");
@@ -189,8 +186,8 @@ public class EventCallbackTest {
 
     @Test
     public void testLeaveApprovalEvent() {
-        AppEventHandlerManager m = new AppEventHandlerManager();
-        m.registerEventCallbackHandler(LeaveApprovalEvent.class, (c, e) -> {
+        AppEventListener m = LarkAppInstanceFactory.createAppEventListener();
+        m.onEvent(LeaveApprovalEvent.class, (c, e) -> {
 
             Assertions.assertEquals(e.getInstanceCode(), "xxx");
             Assertions.assertEquals(e.getEmployeeId(), "xxx");
@@ -211,8 +208,8 @@ public class EventCallbackTest {
 
     @Test
     public void testMessageEvent() {
-        AppEventHandlerManager m = new AppEventHandlerManager();
-        m.registerEventCallbackHandler(MessageEvent.class, (c, e) -> {
+        AppEventListener m = LarkAppInstanceFactory.createAppEventListener();
+        m.onEvent(MessageEvent.class, (c, e) -> {
 
             Assertions.assertEquals(e.getRootId(), "");
             Assertions.assertEquals(e.getParentId(), "");
@@ -233,8 +230,8 @@ public class EventCallbackTest {
 
     @Test
     public void testOrderPaidEvent() {
-        AppEventHandlerManager m = new AppEventHandlerManager();
-        m.registerEventCallbackHandler(OrderPaidEvent.class, (c, e) -> {
+        AppEventListener m = LarkAppInstanceFactory.createAppEventListener();
+        m.onEvent(OrderPaidEvent.class, (c, e) -> {
 
             Assertions.assertEquals(e.getOrderId(), "6704894492631105539");
             Assertions.assertEquals(e.getPricePlanId(), "price_9d86fa1333b8110c");
@@ -255,8 +252,8 @@ public class EventCallbackTest {
 
     @Test
     public void testWorkApprovalEvent() {
-        AppEventHandlerManager m = new AppEventHandlerManager();
-        m.registerEventCallbackHandler(WorkApprovalEvent.class, (c, e) -> {
+        AppEventListener m = LarkAppInstanceFactory.createAppEventListener();
+        m.onEvent(WorkApprovalEvent.class, (c, e) -> {
 
             Assertions.assertEquals(e.getInstanceCode(), "xxx");
             Assertions.assertEquals(e.getEmployeeId(), "xxx");
@@ -276,8 +273,8 @@ public class EventCallbackTest {
 
     @Test
     public void testP2pChatCreateEvent() {
-        AppEventHandlerManager m = new AppEventHandlerManager();
-        m.registerEventCallbackHandler(P2pChatCreateEvent.class, (c, e) -> {
+        AppEventListener m = LarkAppInstanceFactory.createAppEventListener();
+        m.onEvent(P2pChatCreateEvent.class, (c, e) -> {
 
 
             Assertions.assertEquals(e.getChatId(), "oc_26b66a5eb603162b849f91bcd8815b20");
@@ -297,8 +294,8 @@ public class EventCallbackTest {
 
     @Test
     public void testRemedyApprovalEvent() {
-        AppEventHandlerManager m = new AppEventHandlerManager();
-        m.registerEventCallbackHandler(RemedyApprovalEvent.class, (c, e) -> {
+        AppEventListener m = LarkAppInstanceFactory.createAppEventListener();
+        m.onEvent(RemedyApprovalEvent.class, (c, e) -> {
 
             Assertions.assertEquals(e.getInstanceCode(), "xxx");
             Assertions.assertEquals(e.getEmployeeId(), "xxx");
@@ -315,8 +312,8 @@ public class EventCallbackTest {
 
     @Test
     public void testShiftApprovalEvent() {
-        AppEventHandlerManager m = new AppEventHandlerManager();
-        m.registerEventCallbackHandler(ShiftApprovalEvent.class, (c, e) -> {
+        AppEventListener m = LarkAppInstanceFactory.createAppEventListener();
+        m.onEvent(ShiftApprovalEvent.class, (c, e) -> {
 
             Assertions.assertEquals(e.getInstanceCode(), "xxx");
             Assertions.assertEquals(e.getEmployeeId(), "xxx");
@@ -334,8 +331,8 @@ public class EventCallbackTest {
 
     @Test
     public void testTripApprovalEvent() {
-        AppEventHandlerManager m = new AppEventHandlerManager();
-        m.registerEventCallbackHandler(TripApprovalEvent.class, (c, e) -> {
+        AppEventListener m = LarkAppInstanceFactory.createAppEventListener();
+        m.onEvent(TripApprovalEvent.class, (c, e) -> {
 
             Assertions.assertEquals(e.getInstanceCode(), "xxx");
             Assertions.assertEquals(e.getEmployeeId(), "xxx");
@@ -366,8 +363,8 @@ public class EventCallbackTest {
 
     @Test
     public void testAddUserToChatEvent() {
-        AppEventHandlerManager m = new AppEventHandlerManager();
-        m.registerEventCallbackHandler(AddUserToChatEvent.class, (c, e) -> {
+        AppEventListener m = LarkAppInstanceFactory.createAppEventListener();
+        m.onEvent(AddUserToChatEvent.class, (c, e) -> {
 
             Assertions.assertEquals(e.getChatId(), "oc_9e9619b938c9571c1c3165681cdaead5");
             Assertions.assertEquals(e.getOperator().getOpenId(), "ou_18eac85d35a26f989317ad4f02e8bbbb");
@@ -389,8 +386,8 @@ public class EventCallbackTest {
     @Test
     public void testChatDisbandEvent() {
 
-        AppEventHandlerManager m = new AppEventHandlerManager();
-        m.registerEventCallbackHandler(ChatDisbandEvent.class, (c, e) -> {
+        AppEventListener m = LarkAppInstanceFactory.createAppEventListener();
+        m.onEvent(ChatDisbandEvent.class, (c, e) -> {
 
             Assertions.assertEquals(e.getChatId(), "oc_9f2df3c095c9395334bb6e70ced0fa83");
             Assertions.assertEquals(e.getOperator().getOpenId(), "ou_18eac85d35a26f989317ad4f02e8bbbb");
@@ -404,8 +401,8 @@ public class EventCallbackTest {
 
     @Test
     public void testGroupSettingUpdateEvent_1() {
-        AppEventHandlerManager m = new AppEventHandlerManager();
-        m.registerEventCallbackHandler(GroupSettingUpdateEvent.class, (c, e) -> {
+        AppEventListener m = LarkAppInstanceFactory.createAppEventListener();
+        m.onEvent(GroupSettingUpdateEvent.class, (c, e) -> {
 
             Assertions.assertEquals(e.getChatId(), "oc_a080495ca4c3748da1cb38f681f48d6a");
             Assertions.assertEquals(e.getOperator().getOpenId(), "ou_18eac85d35a26f989317ad4f02e8bbbb");
@@ -422,8 +419,8 @@ public class EventCallbackTest {
 
     @Test
     public void testGroupSettingUpdateEvent_2() {
-        AppEventHandlerManager m = new AppEventHandlerManager();
-        m.registerEventCallbackHandler(GroupSettingUpdateEvent.class, (c, e) -> {
+        AppEventListener m = LarkAppInstanceFactory.createAppEventListener();
+        m.onEvent(GroupSettingUpdateEvent.class, (c, e) -> {
 
             Assertions.assertEquals(e.getAfterChange().getAddMemberPermission(), "everyone");
             Assertions.assertEquals(e.getBeforeChange().getAddMemberPermission(), "owner");
@@ -436,8 +433,8 @@ public class EventCallbackTest {
 
     @Test
     public void testGroupSettingUpdateEvent_3() {
-        AppEventHandlerManager m = new AppEventHandlerManager();
-        m.registerEventCallbackHandler(GroupSettingUpdateEvent.class, (c, e) -> {
+        AppEventListener m = LarkAppInstanceFactory.createAppEventListener();
+        m.onEvent(GroupSettingUpdateEvent.class, (c, e) -> {
 
             Assertions.assertEquals(e.getAfterChange().getOwnerOpenId(), "ou_18eac85d35a26f989317ad4f02e8bbbb");
             Assertions.assertEquals(e.getAfterChange().getOwnerUserId(), "ca51d83b");
@@ -452,8 +449,8 @@ public class EventCallbackTest {
 
     @Test
     public void testCreateWidgetInstance() {
-        AppEventHandlerManager m = new AppEventHandlerManager();
-        m.registerEventCallbackHandler(CreateWidgetInstanceEvent.class, (c, e) -> {
+        AppEventListener m = LarkAppInstanceFactory.createAppEventListener();
+        m.onEvent(CreateWidgetInstanceEvent.class, (c, e) -> {
             Assertions.assertIterableEquals(e.getInstanceId(), Lists.newArrayList("b21d41d9-5aeb-4efc-8b7e-a9d6feede8ee"));
             return "{}";
         });
@@ -463,8 +460,8 @@ public class EventCallbackTest {
 
     @Test
     public void testDeleteWidgetInstance() {
-        AppEventHandlerManager m = new AppEventHandlerManager();
-        m.registerEventCallbackHandler(DeleteWidgetInstanceEvent.class, (c, e) -> {
+        AppEventListener m = LarkAppInstanceFactory.createAppEventListener();
+        m.onEvent(DeleteWidgetInstanceEvent.class, (c, e) -> {
             Assertions.assertIterableEquals(e.getInstanceId(), Lists.newArrayList("b21d41d9-5aeb-4efc-8b7e-a9d6feede8ee"));
             return "{}";
         });
@@ -474,15 +471,16 @@ public class EventCallbackTest {
 
     @Test
     public void testAppTicketEvent() {
-        assertEquals("", new LarkAppInstance(instanceContext, new AppEventHandlerManager()).receiveLarkNotify(TestUtils.loadJsonFile("event-json/AppTicketEvent.json")));
+        LarkAppInstance ins = createInstance(instanceContext, null);
+        assertEquals("", ins.receiveLarkNotify(TestUtils.loadJsonFile("event-json/AppTicketEvent.json")));
         assertEquals("xxx", appTicketStorage.loadAppTicket(Constants.APP_NAME, "cli_xxx"));
     }
 
 
     @Test
     public void testCardEvent() {
-        AppEventHandlerManager m = new AppEventHandlerManager();
-        m.registerCardEventHandler((c, e) -> {
+        AppEventListener m = LarkAppInstanceFactory.createAppEventListener();
+        m.onCardEvent((c, e) -> {
 
             Assertions.assertEquals(e.getOpenId(), "ou_sdfimx9948345");
             Assertions.assertEquals(e.getOpenMessageId(), "om_abcdefg1234567890");
@@ -509,10 +507,16 @@ public class EventCallbackTest {
             }
         };
 
-        assertTrue(TestUtils.jsonEquals("{}", new LarkAppInstance(instanceContext, m).receiveCardNotify(TestUtils.loadJsonFile("card-json/button.json"), request)));
+        assertTrue(TestUtils.jsonEquals("{}", createInstance(instanceContext, m).receiveCardNotify(TestUtils.loadJsonFile("card-json/button.json"), request)));
     }
 
-    private void invokeReceive(AppEventHandlerManager appEventHandlerManager, String jsonFile) {
-        assertEquals(new LarkAppInstance(instanceContext, appEventHandlerManager).receiveLarkNotify(TestUtils.loadJsonFile(jsonFile)), "{}");
+    private void invokeReceive(AppEventListener m, String jsonFile) {
+        assertEquals(createInstance(instanceContext, m).receiveLarkNotify(TestUtils.loadJsonFile(jsonFile)), "{}");
+    }
+
+    private LarkAppInstance createInstance(InstanceContext cxt, AppEventListener l) {
+        LarkAppInstance ins = new LarkAppInstance(cxt).setAppEventListener(l);
+        ins.init();
+        return ins;
     }
 }

@@ -7,14 +7,20 @@
 package com.larksuite.appframework.sdk.core;
 
 import com.larksuite.appframework.sdk.client.ImageKeyManager;
+import com.larksuite.appframework.sdk.client.ImageKeyStorage;
 import com.larksuite.appframework.sdk.client.LarkClient;
 import com.larksuite.appframework.sdk.LarkAppInstance;
 import com.larksuite.appframework.sdk.client.MiniProgramAuthenticator;
+import com.larksuite.appframework.sdk.client.SessionManager;
+import com.larksuite.appframework.sdk.core.auth.AppTicketStorage;
 import com.larksuite.appframework.sdk.core.auth.TokenCenter;
+import com.larksuite.appframework.sdk.core.protocol.OpenApiClient;
 
 public class InstanceContext {
 
     private App app;
+
+    private OpenApiClient openApiClient;
 
     private LarkAppInstance larkAppInstance;
 
@@ -26,20 +32,38 @@ public class InstanceContext {
 
     private MiniProgramAuthenticator miniProgramAuthenticator;
 
+    public InstanceContext(App app, OpenApiClient openApiClient) {
+        this.app = app;
+        this.openApiClient = openApiClient;
+        this.larkClient = new LarkClient(this, openApiClient);
+    }
+
     public TokenCenter getTokenCenter() {
         return tokenCenter;
     }
 
-    public void setTokenCenter(TokenCenter tokenCenter) {
-        this.tokenCenter = tokenCenter;
+    public void createTokenCenter(AppTicketStorage appTicketStorage) {
+        this.tokenCenter = new TokenCenter(openApiClient, app, appTicketStorage);
+    }
+
+    public void createImageKeyManager(ImageKeyStorage imageKeyStorage) {
+        if (imageKeyStorage != null) {
+            setImageKeyManager(new ImageKeyManager(app, openApiClient, tokenCenter, imageKeyStorage));
+        }
+    }
+
+    public void createMiniProgramAuthenticator(SessionManager sessionManager, Integer cookieDomainParentLevel) {
+        if (sessionManager != null) {
+            MiniProgramAuthenticator miniProgramAuthenticator = new MiniProgramAuthenticator(openApiClient, tokenCenter, sessionManager);
+            if (cookieDomainParentLevel != null) {
+                miniProgramAuthenticator.setCookieDomainParentLevel(cookieDomainParentLevel);
+            }
+            setMiniProgramAuthenticator(miniProgramAuthenticator);
+        }
     }
 
     public App getApp() {
         return app;
-    }
-
-    public void setApp(App app) {
-        this.app = app;
     }
 
     public LarkAppInstance getLarkAppInstance() {

@@ -50,7 +50,6 @@ public class LarkClient {
         this.instanceContext = instanceContext;
         this.openApiClient = openApiClient;
         this.appId = this.instanceContext.getApp().getAppId();
-        this.instanceContext.setLarkClient(this);
     }
 
 

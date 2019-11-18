@@ -41,9 +41,8 @@ class LarkClientInternalTest {
 
         App app = new App(Constants.APP_NAME, Constants.APP_ID, Constants.APP_SECRET, null, null, false);
 
-        InstanceContext instanceContext = new InstanceContext();
-        instanceContext.setApp(app);
-        instanceContext.setTokenCenter(new TokenCenter(openApiClient, instanceContext.getApp(), null));
+        InstanceContext instanceContext = new InstanceContext(app, openApiClient);
+        instanceContext.createTokenCenter(null);
 
         larkClient = new LarkClient(instanceContext, openApiClient);
     }
@@ -52,7 +51,7 @@ class LarkClientInternalTest {
     @Test
     public void sendChatMessage() throws LarkClientException {
         Message message = new TextMessage("message content");
-        String messageId = larkClient.sendChatMessage(MessageDestinations.ChatId(Constants.CHART_ID), message);
+        String messageId = larkClient.sendChatMessage(MessageDestinations.chatId(Constants.CHART_ID), message);
         Assertions.assertEquals(messageId, Constants.MESSAGE_ID);
     }
 
