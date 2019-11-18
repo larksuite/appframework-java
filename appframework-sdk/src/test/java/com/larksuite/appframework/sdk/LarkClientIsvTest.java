@@ -40,9 +40,8 @@ class LarkClientIsvTest {
 
         App app = new App(Constants.APP_NAME, Constants.APP_ID, Constants.APP_SECRET, null, null, true);
 
-        InstanceContext instanceContext = new InstanceContext();
-        instanceContext.setApp(app);
-        instanceContext.setTokenCenter(new TokenCenter(openApiClient, instanceContext.getApp(), new MockAppTicketStorage()));
+        InstanceContext instanceContext = new InstanceContext(app, openApiClient);
+        instanceContext.createTokenCenter(new MockAppTicketStorage());
 
         instanceContext.getTokenCenter().refreshAppTicket(Constants.APP_TICKET);
 

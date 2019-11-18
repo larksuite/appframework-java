@@ -10,11 +10,15 @@ import com.larksuite.appframework.sdk.client.ImageKeyManager;
 import com.larksuite.appframework.sdk.client.LarkClient;
 import com.larksuite.appframework.sdk.LarkAppInstance;
 import com.larksuite.appframework.sdk.client.MiniProgramAuthenticator;
+import com.larksuite.appframework.sdk.core.auth.AppTicketStorage;
 import com.larksuite.appframework.sdk.core.auth.TokenCenter;
+import com.larksuite.appframework.sdk.core.protocol.OpenApiClient;
 
 public class InstanceContext {
 
     private App app;
+
+    private OpenApiClient openApiClient;
 
     private LarkAppInstance larkAppInstance;
 
@@ -26,20 +30,22 @@ public class InstanceContext {
 
     private MiniProgramAuthenticator miniProgramAuthenticator;
 
+    public InstanceContext(App app, OpenApiClient openApiClient) {
+        this.app = app;
+        this.openApiClient = openApiClient;
+        this.larkClient = new LarkClient(this, openApiClient);
+    }
+
     public TokenCenter getTokenCenter() {
         return tokenCenter;
     }
 
-    public void setTokenCenter(TokenCenter tokenCenter) {
-        this.tokenCenter = tokenCenter;
+    public void createTokenCenter(AppTicketStorage appTicketStorage) {
+        this.tokenCenter = new TokenCenter(openApiClient, app, appTicketStorage);
     }
 
     public App getApp() {
         return app;
-    }
-
-    public void setApp(App app) {
-        this.app = app;
     }
 
     public LarkAppInstance getLarkAppInstance() {

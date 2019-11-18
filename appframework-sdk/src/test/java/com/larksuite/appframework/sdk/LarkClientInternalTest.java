@@ -41,9 +41,8 @@ class LarkClientInternalTest {
 
         App app = new App(Constants.APP_NAME, Constants.APP_ID, Constants.APP_SECRET, null, null, false);
 
-        InstanceContext instanceContext = new InstanceContext();
-        instanceContext.setApp(app);
-        instanceContext.setTokenCenter(new TokenCenter(openApiClient, instanceContext.getApp(), null));
+        InstanceContext instanceContext = new InstanceContext(app, openApiClient);
+        instanceContext.createTokenCenter(null);
 
         larkClient = new LarkClient(instanceContext, openApiClient);
     }

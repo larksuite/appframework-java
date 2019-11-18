@@ -9,13 +9,11 @@ package com.larksuite.appframework.sdk;
 import com.google.common.annotations.VisibleForTesting;
 import com.larksuite.appframework.sdk.client.ImageKeyManager;
 import com.larksuite.appframework.sdk.client.ImageKeyStorage;
-import com.larksuite.appframework.sdk.client.LarkClient;
 import com.larksuite.appframework.sdk.client.MiniProgramAuthenticator;
 import com.larksuite.appframework.sdk.client.SessionManager;
 import com.larksuite.appframework.sdk.core.App;
 import com.larksuite.appframework.sdk.core.InstanceContext;
 import com.larksuite.appframework.sdk.core.auth.AppTicketStorage;
-import com.larksuite.appframework.sdk.core.auth.TokenCenter;
 import com.larksuite.appframework.sdk.core.protocol.OpenApiClient;
 import com.larksuite.appframework.sdk.utils.HttpClient;
 import com.larksuite.appframework.sdk.utils.SimpleHttpClient;
@@ -112,12 +110,9 @@ public class LarkAppInstanceFactory {
                 throw new IllegalArgumentException("AppTicketStorage should not be null for ISV app");
             }
 
-            InstanceContext instanceContext = new InstanceContext();
-            instanceContext.setApp(app);
-            instanceContext.setTokenCenter(new TokenCenter(openApiClient, instanceContext.getApp(), appTicketStorage));
+            InstanceContext instanceContext = new InstanceContext(app, openApiClient);
+            instanceContext.createTokenCenter(appTicketStorage);
 
-            // lark client
-            new LarkClient(instanceContext, openApiClient);
 
             // image key storage
             if (imageKeyStorage != null) {
@@ -133,8 +128,8 @@ public class LarkAppInstanceFactory {
                 instanceContext.setMiniProgramAuthenticator(miniProgramAuthenticator);
             }
 
-            LarkAppInstance ins = new LarkAppInstance(instanceContext);
-            ins.setAppEventListener(eventListener);
+            LarkAppInstance ins = new LarkAppInstance(instanceContext).setAppEventListener(eventListener);
+            ins.init();
             return ins;
         }
     }

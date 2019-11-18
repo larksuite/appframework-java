@@ -12,8 +12,6 @@ import com.larksuite.appframework.sdk.client.LarkClient;
 import com.larksuite.appframework.sdk.core.App;
 import com.larksuite.appframework.sdk.core.InstanceContext;
 import com.larksuite.appframework.sdk.core.auth.AppTicketStorage;
-import com.larksuite.appframework.sdk.core.auth.TokenCenter;
-import com.larksuite.appframework.sdk.core.eventhandler.AppEventHandlerManager;
 import com.larksuite.appframework.sdk.core.protocol.OpenApiClient;
 import com.larksuite.appframework.sdk.core.protocol.event.impl.AddBotEvent;
 import com.larksuite.appframework.sdk.core.protocol.event.impl.AddUserToChatEvent;
@@ -61,9 +59,8 @@ public class EventCallbackTest {
 
         App app = new App(Constants.APP_NAME, Constants.APP_ID, Constants.APP_SECRET, null, "lPIl3TCujWxoxOaqc9SNXXyPOAIpXBd8", true);
 
-        InstanceContext ic = new InstanceContext();
-        ic.setApp(app);
-        ic.setTokenCenter(new TokenCenter(openApiClient, ic.getApp(), appTicketStorage));
+        InstanceContext ic = new InstanceContext(app, openApiClient);
+        ic.createTokenCenter(appTicketStorage);
 
         new LarkClient(ic, openApiClient);
 
@@ -474,7 +471,8 @@ public class EventCallbackTest {
 
     @Test
     public void testAppTicketEvent() {
-        assertEquals("", new LarkAppInstance(instanceContext).receiveLarkNotify(TestUtils.loadJsonFile("event-json/AppTicketEvent.json")));
+        LarkAppInstance ins = createInstance(instanceContext, null);
+        assertEquals("", ins.receiveLarkNotify(TestUtils.loadJsonFile("event-json/AppTicketEvent.json")));
         assertEquals("xxx", appTicketStorage.loadAppTicket(Constants.APP_NAME, "cli_xxx"));
     }
 
@@ -509,10 +507,16 @@ public class EventCallbackTest {
             }
         };
 
-        assertTrue(TestUtils.jsonEquals("{}", new LarkAppInstance(instanceContext).setAppEventListener(m).receiveCardNotify(TestUtils.loadJsonFile("card-json/button.json"), request)));
+        assertTrue(TestUtils.jsonEquals("{}", createInstance(instanceContext, m).receiveCardNotify(TestUtils.loadJsonFile("card-json/button.json"), request)));
     }
 
     private void invokeReceive(AppEventListener m, String jsonFile) {
-        assertEquals(new LarkAppInstance(instanceContext).setAppEventListener(m).receiveLarkNotify(TestUtils.loadJsonFile(jsonFile)), "{}");
+        assertEquals(createInstance(instanceContext, m).receiveLarkNotify(TestUtils.loadJsonFile(jsonFile)), "{}");
+    }
+
+    private LarkAppInstance createInstance(InstanceContext cxt, AppEventListener l) {
+        LarkAppInstance ins = new LarkAppInstance(cxt).setAppEventListener(l);
+        ins.init();
+        return ins;
     }
 }

@@ -51,7 +51,9 @@ public class LarkAppInstance {
         this.appEventHandlerManager = createAppEventHandlerManager(null);
 
         this.instanceContext.setLarkAppInstance(this);
+    }
 
+    public void init() {
         this.instanceContext.getTokenCenter().ensureInit();
     }
 
