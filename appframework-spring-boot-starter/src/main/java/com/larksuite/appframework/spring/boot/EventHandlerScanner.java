@@ -7,6 +7,7 @@
 package com.larksuite.appframework.spring.boot;
 
 import com.larksuite.appframework.sdk.AppConfiguration;
+import com.larksuite.appframework.sdk.AppEventListener;
 import com.larksuite.appframework.sdk.LarkAppInstance;
 import com.larksuite.appframework.sdk.LarkAppInstanceFactory;
 import com.larksuite.appframework.sdk.client.ImageKeyStorage;
@@ -149,7 +150,7 @@ public class EventHandlerScanner {
 
     private LarkAppInstance createLarkAppInstance(AppConfiguration c, AppHandlers appHandlers) {
 
-        LarkAppInstanceFactory.AppEventListener listener = LarkAppInstanceFactory.createAppEventCallbackListener();
+        AppEventListener listener = LarkAppInstanceFactory.createAppEventListener();
 
         if (appHandlers != null) {
             listener.onEvents(appHandlers.callbackEventInvocations.entrySet().stream().collect(

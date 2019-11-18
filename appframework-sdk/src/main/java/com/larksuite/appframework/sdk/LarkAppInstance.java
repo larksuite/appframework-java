@@ -41,17 +41,14 @@ public class LarkAppInstance {
 
     private CallbackEventParser callbackEventParser = new CallbackEventParser();
 
-    private AppEventHandlerManager appEventHandlerManager;
+    private volatile AppEventHandlerManager appEventHandlerManager;
 
     private ScheduledExecutorService delayResendSes = Executors.newScheduledThreadPool(1, new NamedThreadFactory("delay-resend", true));
 
-    public LarkAppInstance(InstanceContext instanceContext,
-                           AppEventHandlerManager appEventHandlerManager) {
+    public LarkAppInstance(InstanceContext instanceContext) {
         this.instanceContext = instanceContext;
 
-        this.appEventHandlerManager = appEventHandlerManager;
-
-        registerDefaultEventHandlers();
+        this.appEventHandlerManager = createAppEventHandlerManager(null);
 
         this.instanceContext.setLarkAppInstance(this);
 
@@ -194,6 +191,26 @@ public class LarkAppInstance {
         return "";
     }
 
+    public LarkAppInstance setAppEventListener(AppEventListener appEventListener) {
+        this.appEventHandlerManager = createAppEventHandlerManager(appEventListener);
+        return this;
+    }
+
+    private AppEventHandlerManager createAppEventHandlerManager(AppEventListener l) {
+        AppEventHandlerManager appEventHandlerManager = new AppEventHandlerManager();
+
+        if (l != null) {
+            l.eventHandlerMap.forEach((c, h) -> appEventHandlerManager.registerEventCallbackHandler(c, h));
+            appEventHandlerManager.registerCardEventHandler(l.cardEventHandler);
+        }
+
+        if (instanceContext.getApp().getIsIsv()) {
+            appEventHandlerManager.registerEventCallbackHandler(AppTicketEvent.class, new AppTicketEventCallbackHandler());
+        }
+
+        return appEventHandlerManager;
+    }
+
     private boolean verifyCardNotify(App app, HttpServletRequest request, String notifyJsonData) {
         String timestamp = request.getHeader("X-Lark-Request-Timestamp");
         String nonce = request.getHeader("X-Lark-Request-Nonce");
@@ -260,9 +277,4 @@ public class LarkAppInstance {
         return "";
     }
 
-    private void registerDefaultEventHandlers() {
-        if (instanceContext.getApp().getIsIsv()) {
-            appEventHandlerManager.registerEventCallbackHandler(AppTicketEvent.class, new AppTicketEventCallbackHandler());
-        }
-    }
 }
