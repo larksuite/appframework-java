@@ -65,6 +65,14 @@ public class LarkAppInstance {
         return instanceContext.getTokenCenter();
     }
 
+    public InstanceContext getInstanceContext() {
+        return instanceContext;
+    }
+
+    public App getApp() {
+        return instanceContext.getApp();
+    }
+
     public MiniProgramAuthenticator getMiniProgramAuthenticator() {
         return instanceContext.getMiniProgramAuthenticator();
     }

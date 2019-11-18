@@ -7,9 +7,11 @@
 package com.larksuite.appframework.sdk.core;
 
 import com.larksuite.appframework.sdk.client.ImageKeyManager;
+import com.larksuite.appframework.sdk.client.ImageKeyStorage;
 import com.larksuite.appframework.sdk.client.LarkClient;
 import com.larksuite.appframework.sdk.LarkAppInstance;
 import com.larksuite.appframework.sdk.client.MiniProgramAuthenticator;
+import com.larksuite.appframework.sdk.client.SessionManager;
 import com.larksuite.appframework.sdk.core.auth.AppTicketStorage;
 import com.larksuite.appframework.sdk.core.auth.TokenCenter;
 import com.larksuite.appframework.sdk.core.protocol.OpenApiClient;
@@ -42,6 +44,22 @@ public class InstanceContext {
 
     public void createTokenCenter(AppTicketStorage appTicketStorage) {
         this.tokenCenter = new TokenCenter(openApiClient, app, appTicketStorage);
+    }
+
+    public void createImageKeyManager(ImageKeyStorage imageKeyStorage) {
+        if (imageKeyStorage != null) {
+            setImageKeyManager(new ImageKeyManager(app, openApiClient, tokenCenter, imageKeyStorage));
+        }
+    }
+
+    public void createMiniProgramAuthenticator(SessionManager sessionManager, Integer cookieDomainParentLevel) {
+        if (sessionManager != null) {
+            MiniProgramAuthenticator miniProgramAuthenticator = new MiniProgramAuthenticator(openApiClient, tokenCenter, sessionManager);
+            if (cookieDomainParentLevel != null) {
+                miniProgramAuthenticator.setCookieDomainParentLevel(cookieDomainParentLevel);
+            }
+            setMiniProgramAuthenticator(miniProgramAuthenticator);
+        }
     }
 
     public App getApp() {

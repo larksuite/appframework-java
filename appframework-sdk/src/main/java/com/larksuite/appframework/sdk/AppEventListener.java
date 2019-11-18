@@ -19,8 +19,11 @@ import com.larksuite.appframework.sdk.core.protocol.event.impl.TripApprovalEvent
 import com.larksuite.appframework.sdk.core.protocol.event.impl.UserAddEvent;
 import com.larksuite.appframework.sdk.core.protocol.event.impl.WorkApprovalEvent;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class AppEventListener {
 
@@ -101,5 +104,12 @@ public class AppEventListener {
     public AppEventListener onEvents(Map<Class<? extends BaseEvent>, EventCallbackHandler> events) {
         eventHandlerMap.putAll(events);
         return this;
+    }
+
+    @Override
+    public String toString() {
+        List<Class> list = new ArrayList<>(eventHandlerMap.keySet());
+        list.add(CardEventHandler.class);
+        return list.stream().map(Class::getSimpleName).collect(Collectors.joining(","));
     }
 }

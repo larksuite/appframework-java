@@ -6,31 +6,21 @@
 
 package com.larksuite.appframework.spring.boot;
 
-import com.larksuite.appframework.sdk.AppConfiguration;
 import com.larksuite.appframework.sdk.AppEventListener;
-import com.larksuite.appframework.sdk.LarkAppInstance;
 import com.larksuite.appframework.sdk.LarkAppInstanceFactory;
-import com.larksuite.appframework.sdk.client.ImageKeyStorage;
 import com.larksuite.appframework.sdk.client.LarkClient;
-import com.larksuite.appframework.sdk.client.SessionManager;
 import com.larksuite.appframework.sdk.client.message.card.Card;
 import com.larksuite.appframework.sdk.client.message.card.CardActionUtils;
 import com.larksuite.appframework.sdk.core.InstanceContext;
-import com.larksuite.appframework.sdk.core.auth.AppTicketStorage;
 import com.larksuite.appframework.sdk.core.eventhandler.CardEventHandler;
 import com.larksuite.appframework.sdk.core.eventhandler.EventCallbackHandler;
 import com.larksuite.appframework.sdk.core.protocol.card.CardEvent;
 import com.larksuite.appframework.sdk.core.protocol.event.BaseEvent;
-import com.larksuite.appframework.sdk.utils.HttpClient;
 import com.larksuite.appframework.sdk.utils.MixUtils;
 import com.larksuite.appframework.spring.boot.annotation.CardAction;
 import com.larksuite.appframework.spring.boot.annotation.Handler;
 import com.larksuite.appframework.spring.boot.annotation.LarkEventHandlers;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ConfigurableApplicationContext;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -41,36 +31,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class EventHandlerScanner {
+public class EventListenerScanner {
 
     private AppframeworkProperties appframeworkProperties;
     private ApplicationContext applicationContext;
 
-    public EventHandlerScanner(AppframeworkProperties appframeworkProperties, ApplicationContext applicationContext) {
+    public EventListenerScanner(AppframeworkProperties appframeworkProperties, ApplicationContext applicationContext) {
         this.appframeworkProperties = appframeworkProperties;
         this.applicationContext = applicationContext;
     }
 
-    public void scan() {
-        if (appframeworkProperties.getApps().isEmpty()) {
-            return;
-        }
-
-        appframeworkProperties.getApps().forEach(AppConfiguration::checkConfiguration);
-
-        final Map<String, AppHandlers> appEventHandlers = scanEventHandlers();
-
-        appframeworkProperties.getApps().forEach(ac -> {
-
-            AppHandlers handlers = appEventHandlers.get(ac.getAppShortName());
-
-            LarkAppInstance larkAppInstance = createLarkAppInstance(ac, handlers);
-
-            registerLarkAppInstance(larkAppInstance);
-        });
-    }
-
-    private Map<String, AppHandlers> scanEventHandlers() {
+    public Map<String, AppEventListener> scanEventListeners() {
         Map<String, Object> beans = applicationContext.getBeansWithAnnotation(LarkEventHandlers.class);
 
         // appName -> eventType -> invocation
@@ -118,7 +89,21 @@ public class EventHandlerScanner {
             });
         }
 
-        return appEventHandlers;
+
+        return appEventHandlers.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> {
+
+            AppHandlers appHandlers = e.getValue();
+
+            AppEventListener listener = LarkAppInstanceFactory.createAppEventListener();
+
+            listener.onEvents(appHandlers.callbackEventInvocations.entrySet().stream().collect(
+                    Collectors.toMap(Map.Entry::getKey, ee -> methodToCallbackEventHandler(ee.getKey(), ee.getValue()))
+            ));
+
+            listener.onCardEvent(methodToCardEventHandler(appHandlers));
+
+            return listener;
+        }));
     }
 
     private String getAppName(Invocation invocation) {
@@ -134,72 +119,6 @@ public class EventHandlerScanner {
 
         return name;
     }
-
-    private void registerLarkAppInstance(LarkAppInstance ins) {
-        final String appName = ins.getAppShortName();
-
-        DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory) ((ConfigurableApplicationContext) applicationContext).getBeanFactory();
-        beanFactory.registerSingleton(appName + "LarkAppInstance", ins);
-        beanFactory.registerSingleton(appName + "LarkClient", ins.getLarkClient());
-
-        if (ins.getMiniProgramAuthenticator() != null) {
-            beanFactory.registerSingleton(appName + "MiniProgramAuthenticator", ins.getMiniProgramAuthenticator());
-        }
-    }
-
-
-    private LarkAppInstance createLarkAppInstance(AppConfiguration c, AppHandlers appHandlers) {
-
-        AppEventListener listener = LarkAppInstanceFactory.createAppEventListener();
-
-        if (appHandlers != null) {
-            listener.onEvents(appHandlers.callbackEventInvocations.entrySet().stream().collect(
-                    Collectors.toMap(Map.Entry::getKey, e -> methodToCallbackEventHandler(e.getKey(), e.getValue()))
-            ));
-
-            listener.onCardEvent(methodToCardEventHandler(appHandlers));
-        }
-
-        LarkAppInstanceFactory.LarkAppInstanceBuilder builder = LarkAppInstanceFactory
-                .builder(c)
-                .registerAppEventCallbackListener(listener);
-
-        if (appframeworkProperties.getFeishu()) {
-            builder.feishu();
-        }
-
-        if (c.getIsIsv()) {
-            try {
-                AppTicketStorage appTicketStorage = applicationContext.getBean(AppTicketStorage.class);
-                builder.appTicketStorage(appTicketStorage);
-            } catch (BeansException e) {
-                throw new IllegalStateException("cannot find an unique AppTicketStorage for ISV app " + c.getAppShortName());
-            }
-        }
-
-        try {
-            // try to find a httpClient object from context
-            builder.httpClient(applicationContext.getBean(HttpClient.class));
-        } catch (NoSuchBeanDefinitionException e) {
-            // ignore
-        }
-
-        try {
-            builder.imageKeyStorage(applicationContext.getBean(ImageKeyStorage.class));
-        } catch (NoSuchBeanDefinitionException e) {
-            // ignore
-        }
-
-        try {
-            SessionManager sm = applicationContext.getBean(SessionManager.class);
-            builder.authenticator(sm, appframeworkProperties.getCookieDomainParentLevel());
-        } catch (NoSuchBeanDefinitionException e) {
-
-        }
-
-        return builder.create();
-    }
-
 
     private <T extends BaseEvent> EventCallbackHandler<T> methodToCallbackEventHandler(Class<T> eventType, Invocation invocation) {
 

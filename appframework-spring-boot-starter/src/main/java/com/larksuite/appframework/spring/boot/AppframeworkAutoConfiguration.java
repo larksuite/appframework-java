@@ -8,42 +8,58 @@ package com.larksuite.appframework.spring.boot;
 
 
 import com.larksuite.appframework.sdk.AppConfiguration;
+import com.larksuite.appframework.sdk.AppEventListener;
 import com.larksuite.appframework.sdk.LarkAppInstance;
+import com.larksuite.appframework.sdk.LarkAppInstanceFactory;
+import com.larksuite.appframework.sdk.client.ImageKeyStorage;
+import com.larksuite.appframework.sdk.client.SessionManager;
+import com.larksuite.appframework.sdk.core.auth.AppTicketStorage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.bind.BindResult;
+import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.event.EventListener;
+import org.springframework.core.env.Environment;
 
 import javax.servlet.http.HttpServlet;
+import java.lang.reflect.Parameter;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Configuration
 @EnableConfigurationProperties({AppframeworkProperties.class})
 @ConditionalOnClass({LarkAppInstance.class})
-public class AppframeworkAutoConfiguration implements ApplicationContextAware, InitializingBean {
+public class AppframeworkAutoConfiguration implements ApplicationContextAware, BeanDefinitionRegistryPostProcessor, BeanPostProcessor, EnvironmentAware {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AppframeworkAutoConfiguration.class);
 
-    @Autowired
     private AppframeworkProperties appframeworkProperties;
 
     protected ApplicationContext applicationContext;
 
+    private Environment environment;
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
-
-        new EventHandlerScanner(appframeworkProperties, applicationContext).scan();
-    }
-
+    private Map<String, LarkAppInstance> instanceMap = new HashMap<>();
 
     @ConditionalOnProperty("larksuite.appframework.notify.base-path")
     @Bean
@@ -109,5 +125,130 @@ public class AppframeworkAutoConfiguration implements ApplicationContextAware, I
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
+    }
+
+    @Override
+    public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
+        BindResult<AppframeworkProperties> bind = Binder.get(environment).bind("larksuite.appframework", Bindable.of(AppframeworkProperties.class));
+        AppframeworkProperties p = bind.get();
+        if (p == null) {
+            return;
+        }
+
+        appframeworkProperties = p;
+        if (p.getApps() == null) {
+            return;
+        }
+
+        appframeworkProperties.getApps().forEach(AppConfiguration::checkConfiguration);
+        p.getApps().forEach(c -> {
+            LarkAppInstanceFactory.LarkAppInstanceBuilder builder = LarkAppInstanceFactory.builder(c);
+
+            if (appframeworkProperties.getFeishu()) {
+                builder.feishu();
+            }
+
+            LarkAppInstance ins = builder.create();
+            final String appName = ins.getAppShortName();
+
+            DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory) ((ConfigurableApplicationContext) applicationContext).getBeanFactory();
+
+            String larkAppInstanceName = appName + "LarkAppInstance";
+            String larkClientName = appName + "LarkClient";
+            beanFactory.registerSingleton(larkAppInstanceName, ins);
+            beanFactory.registerSingleton(larkClientName, ins.getLarkClient());
+
+            if (!ins.getApp().getIsIsv()) {
+                ins.getInstanceContext().createTokenCenter(null);
+            }
+            instanceMap.put(appName, ins);
+
+            LOGGER.info("create LarkAppInstance bean, name: {} ", larkAppInstanceName);
+            LOGGER.info("create LarkClient bean, name: {} ", larkClientName);
+        });
+    }
+
+    @Override
+    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+    }
+
+    private boolean appTicketStorageInited = false;
+    private boolean imageKeyStorageInited = false;
+    private boolean sessionManagerInited = false;
+
+    @Override
+    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+        if (bean instanceof AppTicketStorage) {
+            if (appTicketStorageInited) {
+                throw new IllegalStateException("find multi AppTicketStorage beans");
+            }
+            for (LarkAppInstance ins : instanceMap.values()) {
+                if (ins.getApp().getIsIsv()) {
+                    ins.getInstanceContext().createTokenCenter((AppTicketStorage)bean);
+
+                    LOGGER.info("find appTicketStorage for ISV app: {}", ins.getAppShortName());
+                }
+            }
+            appTicketStorageInited = true;
+        } else if (bean instanceof ImageKeyStorage) {
+            if (imageKeyStorageInited) {
+                throw new IllegalStateException("find multi ImageKeyStorage beans");
+            }
+            for (LarkAppInstance ins : instanceMap.values()) {
+                ins.getInstanceContext().createImageKeyManager((ImageKeyStorage)bean);
+
+                LOGGER.info("create ImageKeyManager for app: {}", ins.getAppShortName());
+            }
+            imageKeyStorageInited = true;
+        } else if (bean instanceof SessionManager) {
+            if (sessionManagerInited) {
+                throw new IllegalStateException("find multi SessionManager beans");
+            }
+
+            for (LarkAppInstance ins : instanceMap.values()) {
+                ins.getInstanceContext().createMiniProgramAuthenticator((SessionManager)bean, appframeworkProperties.getCookieDomainParentLevel());
+
+                LOGGER.info("create MiniProgramAuthenticator for app: {}", ins.getAppShortName());
+            }
+            sessionManagerInited = true;
+        }
+
+        return bean;
+    }
+
+    @Override
+    public void setEnvironment(Environment environment) {
+        this.environment = environment;
+    }
+
+    @EventListener(ApplicationStartedEvent.class)
+    public void onApplicationEvent(ApplicationStartedEvent event) {
+
+        if (!appTicketStorageInited) {
+            for (LarkAppInstance ins : instanceMap.values()) {
+                if (ins.getApp().getIsIsv()) {
+                    throw new IllegalStateException("cannot find an unique AppTicketStorage for ISV app " + ins.getAppShortName());
+                }
+            }
+        }
+
+        EventListenerScanner sc = new EventListenerScanner(appframeworkProperties, applicationContext);
+        Map<String, AppEventListener> map = sc.scanEventListeners();
+
+        for (LarkAppInstance ins : instanceMap.values()) {
+            AppEventListener appEventListener = map.get(ins.getAppShortName());
+            if (appEventListener != null) {
+                ins.setAppEventListener(appEventListener);
+                LOGGER.info("app {} listening events: {}", ins.getAppShortName(), appEventListener.toString());
+            } else {
+                LOGGER.warn("app {} not listening any event", ins.getAppShortName());
+            }
+        }
+
+        for (LarkAppInstance ins : instanceMap.values()) {
+            ins.init();
+        }
+
+        LOGGER.info("apps initializing done, apps: {}", instanceMap.values().stream().map(LarkAppInstance::getAppShortName).collect(Collectors.joining(",")));
     }
 }
