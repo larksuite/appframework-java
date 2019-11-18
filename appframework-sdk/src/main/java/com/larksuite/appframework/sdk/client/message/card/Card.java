@@ -23,6 +23,8 @@ public class Card implements CardComponent {
 
     private Map<String, List<Module>> i18nElements;
 
+    private List<String> openIds;
+
     public Card(Config config, Header header) {
         this.config = config;
         this.header = header;
@@ -47,8 +49,12 @@ public class Card implements CardComponent {
         i18nElements.put("ja_jp", l);
     }
 
+    public void setOpenIds(List<String> ids) {
+        openIds = ids;
+    }
+
     private void ensureI18nElements() {
-        if (i18nElements != null) {
+        if (i18nElements == null) {
             i18nElements = new HashMap<>(3);
         }
     }
@@ -67,6 +73,10 @@ public class Card implements CardComponent {
 
         if (elements != null) {
             r.put("elements", elements.stream().map(CardComponent::toObjectForJson).collect(Collectors.toList()));
+        }
+
+        if (openIds != null) {
+            r.put("open_ids", openIds);
         }
 
         if (i18nElements != null) {
