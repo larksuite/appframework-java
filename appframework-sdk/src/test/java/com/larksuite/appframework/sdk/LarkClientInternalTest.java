@@ -79,7 +79,6 @@ class LarkClientInternalTest {
         LarkClient.UploadImageResult result = larkClient.uploadImage("originName", new ByteArrayInputStream(Constants.IMAGE_CONTENT));
 
         assertEquals(result.getImageKey(), "imageKey");
-        assertEquals(result.getUrl(), "url");
     }
 
     @Test

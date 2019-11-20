@@ -81,7 +81,6 @@ class LarkClientIsvTest {
         LarkClient.UploadImageResult result = larkClient.uploadImageIsv("originName", new ByteArrayInputStream(Constants.IMAGE_CONTENT), Constants.TENANT_KEY);
 
         assertEquals(result.getImageKey(), "imageKey");
-        assertEquals(result.getUrl(), "url");
     }
 
 
