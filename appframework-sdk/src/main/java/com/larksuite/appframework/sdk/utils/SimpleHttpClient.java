@@ -27,7 +27,7 @@ public class SimpleHttpClient implements HttpClient {
     }
 
     @Override
-    public String doPostFile(String url, int connectTimeout, int readTimeout, Map<String, String> headers, List<FileField> files) throws HttpException {
+    public String doPostFile(String url, int connectTimeout, int readTimeout, Map<String, String> headers, List<Field> fields) throws HttpException {
 
         HttpURLConnection conn = null;
         try {
@@ -35,8 +35,8 @@ public class SimpleHttpClient implements HttpClient {
 
             MultiPartHttpRequester multiPartHttpRequester = new MultiPartHttpRequester(conn);
 
-            for (FileField f : files) {
-                multiPartHttpRequester.addFile(f);
+            for (Field f : fields) {
+                multiPartHttpRequester.addField(f);
             }
 
             multiPartHttpRequester.finish();
@@ -138,6 +138,15 @@ public class SimpleHttpClient implements HttpClient {
             dos = new DataOutputStream(conn.getOutputStream());
         }
 
+        void addField(Field f) throws IOException {
+            if (f instanceof FileField){
+                addFile((FileField) f);
+            }else if (f instanceof DataField){
+                addData((DataField)f);
+            }else
+                return;
+        }
+
         void addFile(FileField f) throws IOException {
             dos.writeBytes("--" + boundary + LINE_FEED);
             dos.writeBytes("Content-Disposition: form-data; name=\"" + f.fieldName + "\"; filename=\"" + f.fileName + "\"" + LINE_FEED);
@@ -149,6 +158,14 @@ public class SimpleHttpClient implements HttpClient {
             MixUtils.copyStream(f.is, dos);
 
             dos.writeBytes(LINE_FEED);
+            dos.flush();
+        }
+
+        void addData(DataField d) throws IOException {
+            dos.writeBytes("--" + boundary + LINE_FEED);
+            dos.writeBytes("Content-Disposition: form-data; name=\"" + d.fieldName + "\"" + LINE_FEED);
+            dos.writeBytes(LINE_FEED);
+            dos.writeBytes(d.value);
             dos.flush();
         }
 

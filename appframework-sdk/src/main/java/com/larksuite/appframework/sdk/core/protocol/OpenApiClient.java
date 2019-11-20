@@ -26,7 +26,7 @@ public class OpenApiClient {
     private static final String ResendAppTicketPath = "/open-apis/auth/v3/app_ticket/resend";
     private static final String SendMessagePath = "/open-apis/message/v4/send/";
     private static final String SendMessageBatchPath = "/open-apis/message/v4/batch_send/";
-    private static final String UploadImagePath = "/open-apis/image/v4/upload/";
+    private static final String UploadImagePath = "/open-apis/image/v4/put/";
     private static final String FetchChatInfoPath = "/open-apis/chat/v4/info/";
     private static final String FetchChatListPath = "/open-apis/chat/v4/list/";
 
@@ -50,17 +50,18 @@ public class OpenApiClient {
     }
 
     public SendMessageResponse sendMessage(String tenantAccessToken, SendMessageRequest req) throws LarkClientException {
-        return call(() -> httpClient.doPostJson(basePath + SendMessagePath, 3000, 3000, createHeaderWithAuthorization(tenantAccessToken), JsonUtil.larkFormatToJsonString(req)), SendMessageResponse.class);
+        return call(() -> httpClient.doPostJson(basePath + SendMessagePath, 3000, 5000, createHeaderWithAuthorization(tenantAccessToken), JsonUtil.larkFormatToJsonString(req)), SendMessageResponse.class);
     }
 
     public SendMessageBatchResponse sendMessageBatch(String tenantAccessToken, SendMessageBatchRequest req) throws LarkClientException {
-        return call(() -> httpClient.doPostJson(basePath + SendMessageBatchPath, 3000, 3000, createHeaderWithAuthorization(tenantAccessToken), JsonUtil.larkFormatToJsonString(req)), SendMessageBatchResponse.class);
+        return call(() -> httpClient.doPostJson(basePath + SendMessageBatchPath, 3000, 5000, createHeaderWithAuthorization(tenantAccessToken), JsonUtil.larkFormatToJsonString(req)), SendMessageBatchResponse.class);
     }
 
     public UploadImageResponse uploadImage(String tenantAccessToken, UploadImageRequest req) throws LarkClientException {
         return call(() -> {
-            List<HttpClient.FileField> fl = new ArrayList<>(1);
+            List<HttpClient.Field> fl = new ArrayList<>(2);
             fl.add(new HttpClient.FileField("image", req.getImageFile(), req.getOriginName()));
+            fl.add(new HttpClient.DataField("image_type", "message"));
 
             return httpClient.doPostFile(basePath + UploadImagePath,
                     3000, 5000,

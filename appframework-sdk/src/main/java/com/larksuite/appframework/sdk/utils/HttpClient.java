@@ -20,17 +20,41 @@ public interface HttpClient {
 
     String doPostJson(String url, int connectTimeout, int readTimeout, Map<String, String> headers, String data) throws HttpException;
 
-    String doPostFile(String url, int connectTimeout, int readTimeout, Map<String, String> headers, List<FileField> files) throws HttpException;
+    String doPostFile(String url, int connectTimeout, int readTimeout, Map<String, String> headers, List<Field> files) throws HttpException;
+
+    abstract class Field {
+
+        String fieldName;
+
+        public Field(String fieldName) {
+            this.fieldName = fieldName;
+        }
+    }
 
     @Setter
     @Getter
-    @AllArgsConstructor
-    class FileField {
-
-        String fieldName;
+    class FileField extends Field{
 
         InputStream is;
 
         String fileName;
+
+        public FileField(String fieldName, InputStream is, String fileName) {
+            super(fieldName);
+            this.is = is;
+            this.fileName = fileName;
+        }
+    }
+
+    @Setter
+    @Getter
+    class DataField extends Field{
+
+        String value;
+
+        public DataField(String fieldName, String value) {
+            super(fieldName);
+            this.value = value;
+        }
     }
 }

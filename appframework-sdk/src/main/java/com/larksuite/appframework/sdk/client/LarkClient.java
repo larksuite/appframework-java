@@ -164,7 +164,6 @@ public class LarkClient {
 
             UploadImageResult result = new UploadImageResult();
             result.setImageKey(resp.getData().getImageKey());
-            result.setUrl(resp.getData().getUrl());
             return result;
         }, tenantKey);
 
@@ -277,8 +276,6 @@ public class LarkClient {
     @ToString
     public static class UploadImageResult {
         private String imageKey;
-
-        private String Url;
     }
 
     @Getter
