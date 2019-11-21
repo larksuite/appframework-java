@@ -1,0 +1,46 @@
+{
+  "uuid": "d465df13905458e361ff39af85d96d09",
+  "token": "2g7als3DgPW6Xp1xEpmcvgVhQG621bFY",
+  "ts": "1550111453.764646",
+  "type": "event_callback",
+  "event": {
+    "type": "message",
+    "app_id": "cli_xxx",
+    "tenant_key": "xxx",
+    "root_id": "",
+    "parent_id": "",
+    "open_chat_id": "oc_5ce6d572455d361153b7cb51da133945",
+    "msg_type": "merge_forward",
+    "open_id": "ou_18eac85d35a26f989317ad4f02e8bbbb",
+    "open_message_id": "om_36686ee62209da697d8775375d0c8e88",
+    "is_mention": false,
+    "chat_type": "private",
+    "chat_id": "6642174187597201422",
+    "user": "6610187460791558158",
+    "msg_list": [
+      {
+        "root_id": "",
+        "parent_id": "",
+        "open_chat_id": "oc_b74c59c68d0f2d0ac65846272499d651",
+        "msg_type": "text",
+        "open_id": "",
+        "open_message_id": "om_a96c620f2aa036e3c08abebaec7f09d1",
+        "is_mention": false,
+        "text": "文本1",
+        "create_time": 1550044749
+      },
+      {
+        "root_id": "",
+        "parent_id": "",
+        "open_chat_id": "oc_b74c59c68d0f2d0ac65846272499d651",
+        "msg_type": "post",
+        "open_id": "",
+        "open_message_id": "om_5d5b1732aa9b997dff23d63146427bb2",
+        "is_mention": false,
+        "text": "\u003cp\u003e富文本内容\u003c/p\u003e\u003cfigure\u003e\u003cimg src=\"http://p2.pstatp.com/origin/dad90010d9c8fc72f0b0\" origin-width=\"888\" origin-height=\"888\"/\u003e\u003c/figure\u003e",
+        "title": "富文本",
+        "create_time": 1550044772
+      }
+    ]
+  }
+}

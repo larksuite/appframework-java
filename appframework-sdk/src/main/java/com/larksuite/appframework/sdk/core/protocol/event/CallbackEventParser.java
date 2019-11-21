@@ -7,6 +7,7 @@
 package com.larksuite.appframework.sdk.core.protocol.event;
 
 import com.larksuite.appframework.sdk.annotation.Event;
+import com.larksuite.appframework.sdk.annotation.MessageEvent;
 import com.larksuite.appframework.sdk.core.protocol.event.impl.AddBotEvent;
 import com.larksuite.appframework.sdk.core.protocol.event.impl.AddUserToChatEvent;
 import com.larksuite.appframework.sdk.core.protocol.event.impl.AppOpenEvent;
@@ -22,7 +23,6 @@ import com.larksuite.appframework.sdk.core.protocol.event.impl.DeptDeleteEvent;
 import com.larksuite.appframework.sdk.core.protocol.event.impl.DeptUpdateEvent;
 import com.larksuite.appframework.sdk.core.protocol.event.impl.GroupSettingUpdateEvent;
 import com.larksuite.appframework.sdk.core.protocol.event.impl.LeaveApprovalEvent;
-import com.larksuite.appframework.sdk.core.protocol.event.impl.MessageEvent;
 import com.larksuite.appframework.sdk.core.protocol.event.impl.OrderPaidEvent;
 import com.larksuite.appframework.sdk.core.protocol.event.impl.P2pChatCreateEvent;
 import com.larksuite.appframework.sdk.core.protocol.event.impl.RemedyApprovalEvent;
@@ -35,6 +35,12 @@ import com.larksuite.appframework.sdk.core.protocol.event.impl.UserAddEvent;
 import com.larksuite.appframework.sdk.core.protocol.event.impl.UserLeaveEvent;
 import com.larksuite.appframework.sdk.core.protocol.event.impl.UserUpdateEvent;
 import com.larksuite.appframework.sdk.core.protocol.event.impl.WorkApprovalEvent;
+import com.larksuite.appframework.sdk.core.protocol.event.impl.message.BaseMessageEvent;
+import com.larksuite.appframework.sdk.core.protocol.event.impl.message.FileMessageEvent;
+import com.larksuite.appframework.sdk.core.protocol.event.impl.message.ImageMessageEvent;
+import com.larksuite.appframework.sdk.core.protocol.event.impl.message.MergeForwardMessageEvent;
+import com.larksuite.appframework.sdk.core.protocol.event.impl.message.PostMessageEvent;
+import com.larksuite.appframework.sdk.core.protocol.event.impl.message.TextMessageEvent;
 import com.larksuite.appframework.sdk.utils.JsonUtil;
 
 import java.util.HashMap;
@@ -42,58 +48,123 @@ import java.util.Map;
 
 public class CallbackEventParser {
 
-    private static Map<String, Class<? extends BaseEvent>> eventTypeMap;
+    private static Map<String, EventParser> eventTypeMap;
 
     static {
         eventTypeMap = new HashMap<>(32);
-        registerEventType(AppOpenEvent.class);
-        registerEventType(ApprovalEvent.class);
-        registerEventType(AppStatusChangeEvent.class);
-        registerEventType(AddBotEvent.class);
-        registerEventType(RemoveBotEvent.class);
+        registerClassMappingEventTypeParser(AppOpenEvent.class);
+        registerClassMappingEventTypeParser(ApprovalEvent.class);
+        registerClassMappingEventTypeParser(AppStatusChangeEvent.class);
+        registerClassMappingEventTypeParser(AddBotEvent.class);
+        registerClassMappingEventTypeParser(RemoveBotEvent.class);
 
-        registerEventType(UserAddEvent.class);
-        registerEventType(UserUpdateEvent.class);
-        registerEventType(UserLeaveEvent.class);
+        registerClassMappingEventTypeParser(UserAddEvent.class);
+        registerClassMappingEventTypeParser(UserUpdateEvent.class);
+        registerClassMappingEventTypeParser(UserLeaveEvent.class);
 
-        registerEventType(DeptAddEvent.class);
-        registerEventType(DeptUpdateEvent.class);
-        registerEventType(DeptDeleteEvent.class);
+        registerClassMappingEventTypeParser(DeptAddEvent.class);
+        registerClassMappingEventTypeParser(DeptUpdateEvent.class);
+        registerClassMappingEventTypeParser(DeptDeleteEvent.class);
 
-        registerEventType(ContactScopeChangeEvent.class);
+        registerClassMappingEventTypeParser(ContactScopeChangeEvent.class);
 
-        registerEventType(LeaveApprovalEvent.class);
-        registerEventType(MessageEvent.class);
-        registerEventType(OrderPaidEvent.class);
-        registerEventType(WorkApprovalEvent.class);
-        registerEventType(P2pChatCreateEvent.class);
-        registerEventType(RemedyApprovalEvent.class);
-        registerEventType(ShiftApprovalEvent.class);
-        registerEventType(TripApprovalEvent.class);
-        registerEventType(AppTicketEvent.class);
-        registerEventType(AddUserToChatEvent.class);
-        registerEventType(RemoveUserFromChatEvent.class);
-        registerEventType(RevokeAddUserFromChatEvent.class);
-        registerEventType(ChatDisbandEvent.class);
-        registerEventType(GroupSettingUpdateEvent.class);
+        registerClassMappingEventTypeParser(LeaveApprovalEvent.class);
+        registerClassMappingEventTypeParser(OrderPaidEvent.class);
+        registerClassMappingEventTypeParser(WorkApprovalEvent.class);
+        registerClassMappingEventTypeParser(P2pChatCreateEvent.class);
+        registerClassMappingEventTypeParser(RemedyApprovalEvent.class);
+        registerClassMappingEventTypeParser(ShiftApprovalEvent.class);
+        registerClassMappingEventTypeParser(TripApprovalEvent.class);
+        registerClassMappingEventTypeParser(AppTicketEvent.class);
+        registerClassMappingEventTypeParser(AddUserToChatEvent.class);
+        registerClassMappingEventTypeParser(RemoveUserFromChatEvent.class);
+        registerClassMappingEventTypeParser(RevokeAddUserFromChatEvent.class);
+        registerClassMappingEventTypeParser(ChatDisbandEvent.class);
+        registerClassMappingEventTypeParser(GroupSettingUpdateEvent.class);
 
-        registerEventType(CreateWidgetInstanceEvent.class);
-        registerEventType(DeleteWidgetInstanceEvent.class);
-    }
+        registerClassMappingEventTypeParser(CreateWidgetInstanceEvent.class);
+        registerClassMappingEventTypeParser(DeleteWidgetInstanceEvent.class);
 
-    private static void registerEventType(Class<? extends BaseEvent> eventClass) {
-        Event annotation = eventClass.getAnnotation(Event.class);
-        if (annotation == null) {
-            return;
+        // message event parser
+        {
+            MessageEventParser parser = new MessageEventParser();
+            parser.registerTypes(
+                    TextMessageEvent.class,
+                    PostMessageEvent.class,
+                    ImageMessageEvent.class,
+                    MergeForwardMessageEvent.class,
+                    FileMessageEvent.class
+            );
+            registerEventParser(BaseMessageEvent.class.getAnnotation(Event.class), parser);
         }
-        eventTypeMap.put(annotation.type(), eventClass);
     }
 
-    public BaseEvent parseEvent(String type, Object data) {
-        Class<? extends BaseEvent> clazz = eventTypeMap.get(type);
-        if (clazz == null) {
+    private static void registerClassMappingEventTypeParser(Class<? extends BaseEvent> eventClass) {
+        Event annotation = eventClass.getAnnotation(Event.class);
+        registerEventParser(annotation, new ClassMappingEventParser(eventClass));
+    }
+
+    private static void registerEventParser(Event eventAnn, EventParser eventParser) {
+        if (eventAnn != null) {
+            eventTypeMap.put(eventAnn.type(), eventParser);
+        }
+    }
+
+    public BaseEvent parseEvent(String type, Map<String, Object> data) {
+
+        EventParser parser = eventTypeMap.get(type);
+        if (parser == null) {
             return null;
         }
-        return JsonUtil.larkFormatConvertToJavaObject(data, clazz);
+        return parser.parse(data);
+    }
+
+    interface EventParser {
+        BaseEvent parse(Map<String, Object> data);
+    }
+
+    private static class ClassMappingEventParser implements EventParser {
+
+        Class<? extends BaseEvent> clazz;
+
+        ClassMappingEventParser(Class<? extends BaseEvent> clazz) {
+            this.clazz = clazz;
+        }
+
+        @Override
+        public BaseEvent parse(Map<String, Object> data) {
+            return JsonUtil.larkFormatConvertToJavaObject(data, clazz);
+        }
+    }
+
+    private static class MessageEventParser implements EventParser {
+
+        private static Map<String, Class<? extends BaseMessageEvent>> messageEventTypeMap = new HashMap<>();
+
+        public void registerTypes(Class<? extends BaseMessageEvent> ...clz) {
+            for (Class<? extends BaseMessageEvent> aClass : clz) {
+                MessageEvent ann = aClass.getAnnotation(MessageEvent.class);
+                if (ann == null) {
+                    return;
+                }
+                messageEventTypeMap.put(ann.type(), aClass);
+            }
+        }
+
+        @Override
+        public BaseEvent parse(Map<String, Object> data) {
+
+            String msgType = data.get("msg_type").toString();
+            if (msgType == null) {
+                return null;
+            }
+
+            Class<? extends BaseMessageEvent> msgEventClz = messageEventTypeMap.get(msgType);
+            if (msgEventClz == null) {
+                return null;
+            }
+
+            return JsonUtil.larkFormatConvertToJavaObject(data, msgEventClz);
+        }
     }
 }

@@ -1,0 +1,22 @@
+{
+  "uuid": "c58e17e9e84824a48e51a562cf969fb3",
+  "token": "2g7als3DgPW6Xp1xEpmcvgVhQG621bFY",
+  "ts": "1550038110.478493",
+  "type": "event_callback",
+  "event": {
+    "type": "message",
+    "app_id": "cli_xxx",
+    "tenant_key": "xxx",
+    "root_id": "",
+    "parent_id": "",
+    "open_chat_id": "oc_5ce6d572455d361153b7cb51da133945",
+    "chat_type": "private",
+    "msg_type": "image",
+    "image_height" :"300",
+    "image_width" :"300",
+    "open_id": "ou_18eac85d35a26f989317ad4f02e8bbbb",
+    "open_message_id": "om_36686ee62209da697d8775375d0c8e88",
+    "is_mention": false,
+    "image_key": "cd1ce282-94d1-4154-a326-121b07e4721e"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "uuid": "bc447199585340d1f3728d26b1c0297a",
+  "token": "2g7als3DgPW6Xp1xEpmcvgVhQG621bFY",
+  "ts": "1550032496.527917",
+  "type": "event_callback",
+  "event": {
+    "type": "message",
+    "app_id": "cli_xxx",
+    "tenant_key": "xxx",
+    "root_id": "",
+    "parent_id": "",
+    "open_chat_id": "oc_5ce6d572455d361153b7cb51da133945",
+    "chat_type": "private",
+    "msg_type": "post",
+    "open_id": "ou_18eac85d35a26f989317ad4f02e8bbbb",
+    "open_message_id": "om_36686ee62209da697d8775375d0c8e88",
+    "is_mention": false,
+    "text": "\u003cp\u003e测试1212\u003c/p\u003e\u003cfigure\u003e\u003cimg src=\"http://p4.pstatp.com/origin/daff000d4967d033705b\" origin-width=\"2456\" origin-height=\"2458\"/\u003e\u003c/figure\u003e",
+    "text_without_at_bot":"消息内容",
+    "title": "测试" ,
+    "image_keys": [ 
+      "1867eac8-8006-40be-8549-b7beae0d3c4a",
+      "434593af-5269-4db4-8b94-65c6dfd4f35e"
+    ]
+  }
+} 
