@@ -23,7 +23,7 @@ import com.larksuite.appframework.sdk.core.protocol.event.impl.CreateWidgetInsta
 import com.larksuite.appframework.sdk.core.protocol.event.impl.DeleteWidgetInstanceEvent;
 import com.larksuite.appframework.sdk.core.protocol.event.impl.GroupSettingUpdateEvent;
 import com.larksuite.appframework.sdk.core.protocol.event.impl.LeaveApprovalEvent;
-import com.larksuite.appframework.sdk.core.protocol.event.impl.MessageEvent;
+import com.larksuite.appframework.sdk.core.protocol.event.impl.message.BaseMessageEvent;
 import com.larksuite.appframework.sdk.core.protocol.event.impl.OrderPaidEvent;
 import com.larksuite.appframework.sdk.core.protocol.event.impl.P2pChatCreateEvent;
 import com.larksuite.appframework.sdk.core.protocol.event.impl.RemedyApprovalEvent;
@@ -32,6 +32,10 @@ import com.larksuite.appframework.sdk.core.protocol.event.impl.ShiftApprovalEven
 import com.larksuite.appframework.sdk.core.protocol.event.impl.TripApprovalEvent;
 import com.larksuite.appframework.sdk.core.protocol.event.impl.UserAddEvent;
 import com.larksuite.appframework.sdk.core.protocol.event.impl.WorkApprovalEvent;
+import com.larksuite.appframework.sdk.core.protocol.event.impl.message.ImageMessageEvent;
+import com.larksuite.appframework.sdk.core.protocol.event.impl.message.MergeForwardMessageEvent;
+import com.larksuite.appframework.sdk.core.protocol.event.impl.message.PostMessageEvent;
+import com.larksuite.appframework.sdk.core.protocol.event.impl.message.TextMessageEvent;
 import com.larksuite.appframework.sdk.utils.Constants;
 import com.larksuite.appframework.sdk.utils.MockHttpServletRequest;
 import com.larksuite.appframework.sdk.utils.MockOpenApiClient;
@@ -43,6 +47,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -207,9 +212,9 @@ public class EventCallbackTest {
     }
 
     @Test
-    public void testMessageEvent() {
+    public void testTextMessageEvent() {
         AppEventListener m = LarkAppInstanceFactory.createAppEventListener();
-        m.onEvent(MessageEvent.class, (c, e) -> {
+        m.onEvent(BaseMessageEvent.class, (c, e) -> {
 
             Assertions.assertEquals(e.getRootId(), "");
             Assertions.assertEquals(e.getParentId(), "");
@@ -219,14 +224,110 @@ public class EventCallbackTest {
             Assertions.assertEquals(e.getOpenId(), "ou_18eac85d35a26f989317ad4f02e8bbbb");
             Assertions.assertEquals(e.getOpenMessageId(), "om_36686ee62209da697d8775375d0c8e88");
             Assertions.assertEquals(e.getIsMention(), false);
-            Assertions.assertEquals(e.getText(), "消息内容");
-            Assertions.assertEquals(e.getTextWithoutAtBot(), "消息内容");
+            Assertions.assertEquals(((TextMessageEvent)e).getText(), "消息内容");
+            Assertions.assertEquals(((TextMessageEvent)e).getTextWithoutAtBot(), "消息内容");
 
             return "{}";
         });
 
-        invokeReceive(m, "event-json/MessageEvent.json");
+        invokeReceive(m, "event-json/TextMessageEvent.json");
     }
+
+    @Test
+    public void testImageMessageEvent() {
+        AppEventListener m = LarkAppInstanceFactory.createAppEventListener();
+        m.onEvent(ImageMessageEvent.class, (c, e) -> {
+
+            Assertions.assertEquals(e.getRootId(), "");
+            Assertions.assertEquals(e.getParentId(), "");
+            Assertions.assertEquals(e.getOpenChatId(), "oc_5ce6d572455d361153b7cb51da133945");
+            Assertions.assertEquals(e.getChatType(), "private");
+            Assertions.assertEquals(e.getOpenId(), "ou_18eac85d35a26f989317ad4f02e8bbbb");
+            Assertions.assertEquals(e.getOpenMessageId(), "om_36686ee62209da697d8775375d0c8e88");
+            Assertions.assertEquals(e.getIsMention(), false);
+            Assertions.assertEquals(e.getImageKey(),  "cd1ce282-94d1-4154-a326-121b07e4721e");
+            Assertions.assertEquals(e.getImageHeight(), "300");
+            Assertions.assertEquals(e.getImageHeight(), "300");
+
+            return "{}";
+        });
+
+        invokeReceive(m, "event-json/ImageMessageEvent.json");
+    }
+
+    @Test
+    public void testMergeForwardMessageEvent() {
+        AppEventListener m = LarkAppInstanceFactory.createAppEventListener();
+        m.onEvent(MergeForwardMessageEvent.class, (c, e) -> {
+
+            Assertions.assertEquals(e.getRootId(), "");
+            Assertions.assertEquals(e.getParentId(), "");
+            Assertions.assertEquals(e.getOpenChatId(), "oc_5ce6d572455d361153b7cb51da133945");
+            Assertions.assertEquals(e.getChatType(), "private");
+            Assertions.assertEquals(e.getOpenId(), "ou_18eac85d35a26f989317ad4f02e8bbbb");
+            Assertions.assertEquals(e.getOpenMessageId(), "om_36686ee62209da697d8775375d0c8e88");
+            Assertions.assertEquals(e.getIsMention(), false);
+
+            Assertions.assertEquals(2, e.getMsgList().size());
+
+            {
+                MergeForwardMessageEvent.Message mm = e.getMsgList().get(0);
+                Assertions.assertEquals("", mm.getRootId());
+                Assertions.assertEquals("", mm.getParentId());
+                Assertions.assertEquals("oc_b74c59c68d0f2d0ac65846272499d651", mm.getOpenChatId());
+                Assertions.assertEquals("text", mm.getMsgType());
+                Assertions.assertEquals("", mm.getOpenId());
+                Assertions.assertEquals("om_a96c620f2aa036e3c08abebaec7f09d1", mm.getOpenMessageId());
+                Assertions.assertEquals(false, mm.getIsMention());
+                Assertions.assertEquals("文本1", mm.getText());
+                Assertions.assertEquals(1550044749L, mm.getCreateTime());
+            }
+            {
+                MergeForwardMessageEvent.Message mm = e.getMsgList().get(1);
+                Assertions.assertEquals("", mm.getRootId());
+                Assertions.assertEquals("", mm.getParentId());
+                Assertions.assertEquals("oc_b74c59c68d0f2d0ac65846272499d651", mm.getOpenChatId());
+                Assertions.assertEquals("post", mm.getMsgType());
+                Assertions.assertEquals("", mm.getOpenId());
+                Assertions.assertEquals("om_5d5b1732aa9b997dff23d63146427bb2", mm.getOpenMessageId());
+                Assertions.assertEquals(false, mm.getIsMention());
+                Assertions.assertEquals("富文本", mm.getTitle());
+                Assertions.assertEquals(1550044772, mm.getCreateTime());
+            }
+
+            return "{}";
+        });
+
+        invokeReceive(m, "event-json/MergeForwardMessageEvent.json");
+    }
+
+    @Test
+    public void testPostMessageEvent() {
+        AppEventListener m = LarkAppInstanceFactory.createAppEventListener();
+        m.onEvent(PostMessageEvent.class, (c, e) -> {
+
+            Assertions.assertEquals(e.getRootId(), "");
+            Assertions.assertEquals(e.getParentId(), "");
+            Assertions.assertEquals(e.getOpenChatId(), "oc_5ce6d572455d361153b7cb51da133945");
+            Assertions.assertEquals(e.getChatType(), "private");
+            Assertions.assertEquals(e.getOpenId(), "ou_18eac85d35a26f989317ad4f02e8bbbb");
+            Assertions.assertEquals(e.getOpenMessageId(), "om_36686ee62209da697d8775375d0c8e88");
+            Assertions.assertEquals(e.getIsMention(), false);
+
+            Assertions.assertEquals(e.getTextWithoutAtBot(), "消息内容");
+            Assertions.assertEquals(e.getTitle(), "测试");
+
+            Assertions.assertIterableEquals(e.getImageKeys(), Lists.newArrayList(
+                    "1867eac8-8006-40be-8549-b7beae0d3c4a",
+                    "434593af-5269-4db4-8b94-65c6dfd4f35e"));
+
+            return "{}";
+        });
+
+        invokeReceive(m, "event-json/PostMessageEvent.json");
+    }
+
+
 
     @Test
     public void testOrderPaidEvent() {

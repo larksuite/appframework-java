@@ -142,16 +142,21 @@ larkAppInstance.getLarkClient().sendChatMessage(MessageDestinations.UserId("1234
 
 | Function name | Remark |
 | :---: | :---: |
-| sendChatMessageIsv | for ISV app  |
-| sendChatMessage | for internal app |
-| batchSendChatMessageIsv | for ISV app |
-| batchSendChatMessage | for internal app |
-| uploadImageIsv | for ISV app |
-| uploadImage | for internal app |
-| fetchGroupListIsv | for ISV app |
-| fetchGroupList | for internal app |
-| fetchGroupInfoIsv | for ISV app |
-| fetchGroupInfo | for internal app |
+| app_open | AppOpenEvent |
+| approval | ApprovalEvent |
+| app_status_change | AppStatusChangeEvent |
+| app_ticket | AppTicketEvent |
+| add_bot | AddBotEvent|
+| remove_bot| RemovedBotEvent |
+| user_add | UserAddEvent|
+| leave_approval| LeaveApprovalEvent|
+| message|MessageEvent |
+| order_paid| OrderPaidEvent|
+| work_approval| workApprovalEvent|
+| p2p_chat_create| P2pChatCreateEvent|
+| remedy_approval|RemedyApprovalEvent |
+| shift_approval | ShiftApprovalEvent|
+| trip_approval | TripApprovalEvent|
 
 ### 2.3 机器人发送消息类型
 
@@ -297,7 +302,7 @@ public class EventHandlers {
     }
 
     @Handler
-    public Object onMessageEvent(MessageEvent event, InstanceContext ic) {
+    public Object onMessageEvent(TextMessageEvent event, InstanceContext ic) {
         return null;
     }
 }

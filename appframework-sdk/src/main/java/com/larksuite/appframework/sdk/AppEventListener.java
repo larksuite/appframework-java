@@ -9,7 +9,7 @@ import com.larksuite.appframework.sdk.core.protocol.event.impl.AppStatusChangeEv
 import com.larksuite.appframework.sdk.core.protocol.event.impl.AppTicketEvent;
 import com.larksuite.appframework.sdk.core.protocol.event.impl.ApprovalEvent;
 import com.larksuite.appframework.sdk.core.protocol.event.impl.LeaveApprovalEvent;
-import com.larksuite.appframework.sdk.core.protocol.event.impl.MessageEvent;
+import com.larksuite.appframework.sdk.core.protocol.event.impl.message.BaseMessageEvent;
 import com.larksuite.appframework.sdk.core.protocol.event.impl.OrderPaidEvent;
 import com.larksuite.appframework.sdk.core.protocol.event.impl.P2pChatCreateEvent;
 import com.larksuite.appframework.sdk.core.protocol.event.impl.RemedyApprovalEvent;
@@ -64,8 +64,8 @@ public class AppEventListener {
         return onEvent(LeaveApprovalEvent.class, handler);
     }
 
-    public AppEventListener onMessageEvent(EventCallbackHandler<MessageEvent> handler) {
-        return onEvent(MessageEvent.class, handler);
+    public AppEventListener onMessageEvent(EventCallbackHandler<BaseMessageEvent> handler) {
+        return onEvent(BaseMessageEvent.class, handler);
     }
 
     public AppEventListener onOrderPaidEvent(EventCallbackHandler<OrderPaidEvent> handler) {

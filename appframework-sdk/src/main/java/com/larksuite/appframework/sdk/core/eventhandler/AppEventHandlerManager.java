@@ -23,7 +23,14 @@ public class AppEventHandlerManager {
 
     public Object fireEventCallback(InstanceContext c, BaseEvent e) {
 
-        EventCallbackHandler callbackHandler = eventHandlerMap.get(e.getClass());
+        Class<?> clazz = e.getClass();
+        EventCallbackHandler callbackHandler = null;
+
+        while (callbackHandler == null && BaseEvent.class.isAssignableFrom(clazz)) {
+            callbackHandler = eventHandlerMap.get(clazz);
+            clazz = clazz.getSuperclass();
+        }
+
         if (callbackHandler == null) {
             throw new HandlerNotFoundException("cannot find handle for type " + e.getClass().getName());
         }

@@ -4,7 +4,7 @@
  * license that can be found in the LICENSE file.
  */
 
-package com.larksuite.appframework.sdk.core.protocol.event.impl;
+package com.larksuite.appframework.sdk.core.protocol.event.impl.message;
 
 import com.larksuite.appframework.sdk.annotation.Event;
 import com.larksuite.appframework.sdk.core.protocol.event.BaseEvent;
@@ -16,7 +16,7 @@ import lombok.ToString;
 @Getter
 @ToString
 @Event(type = "message")
-public class MessageEvent extends BaseEvent {
+public class BaseMessageEvent extends BaseEvent {
 
     private String tenantKey;
 
@@ -35,9 +35,5 @@ public class MessageEvent extends BaseEvent {
     private String openMessageId;
 
     private Boolean isMention;
-
-    private String text;
-
-    private String textWithoutAtBot;
 
 }
