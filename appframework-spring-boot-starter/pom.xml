@@ -11,14 +11,14 @@
     <parent>
         <groupId>com.larksuite.appframework</groupId>
         <artifactId>appframework-parent</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>appframework-spring-boot-starter</artifactId>
 
     <properties>
-        <appframework.sdk.version>1.0.0-SNAPSHOT</appframework.sdk.version>
+        <appframework.sdk.version>1.0.0</appframework.sdk.version>
         <spring.boot.version>2.1.9.RELEASE</spring.boot.version>
     </properties>
 

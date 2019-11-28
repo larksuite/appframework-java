@@ -73,11 +73,11 @@ public class ImageKeyManager {
     /**
      * register a image for management.
      *
-     * @param tenantKey
+     * @param tenantKey user's tenantKey
      * @param imageName user defined unique name
-     * @param imageContent
+     * @param imageContent imageContent
      * @return imageKey
-     * @throws LarkClientException
+     * @throws LarkClientException throws a LarkClientException
      */
     public String registerImageIsv(String imageName, InputStream imageContent, String tenantKey) throws LarkClientException {
 
