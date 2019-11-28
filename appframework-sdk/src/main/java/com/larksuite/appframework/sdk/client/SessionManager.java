@@ -16,8 +16,7 @@ public interface SessionManager {
 
     /**
      * call this method to turn on session info encryption with AES algorithm
-     * @param encryptKey
-     * @return
+     * @param encryptKey encryptKey
      */
     void turnOnEncryption(String encryptKey);
 
@@ -27,6 +26,11 @@ public interface SessionManager {
      */
     String saveSession(SessionInfo si);
 
+    /**
+     * get session with sessionId
+     * @param sessionId
+     * @return sessionInfo
+     */
     SessionInfo getSession(String sessionId);
 
     int getSessionMaxAge();

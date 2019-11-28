@@ -12,11 +12,11 @@
     <parent>
         <groupId>com.larksuite.appframework</groupId>
         <artifactId>appframework-parent</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.0</version>
     </parent>
 
     <artifactId>appframework-sdk</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
 
     <dependencies>
         <dependency>

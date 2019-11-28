@@ -165,9 +165,11 @@ public class LarkAppInstance {
 
 
     /**
+     *
      * called when receive card notify json data
      *
      * @param notifyJsonData data from lark notify request
+     * @param request
      * @return response data for sending back to lark synchronously
      */
     public String receiveCardNotify(String notifyJsonData, HttpServletRequest request) {

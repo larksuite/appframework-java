@@ -27,8 +27,8 @@ import java.util.List;
  * botframework users should use this class to communicate with lark server
  * <p>
  * usually we don't create instance manually, just get the instance like this
+ * </p>
  * <code>
- * <p>
  * BotAppsServer botAppsServer; // create server by factory
  * LarkClient larkClient = botAppsServer.getLarkClient();
  * </code>
@@ -57,10 +57,10 @@ public class LarkClient {
      * send chat message as ISV
      *
      * @param dest      where will this message send to
-     * @param tenantKey
-     * @param message
-     * @return
-     * @throws LarkClientException
+     * @param tenantKey tenantKey
+     * @param message message
+     * @return messageId
+     * @throws LarkClientException throws a LarkClientException
      */
     public String sendChatMessageIsv(MessageDestination dest, Message message, String tenantKey) throws LarkClientException {
         checkAppType(true);

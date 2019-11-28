@@ -20,6 +20,8 @@ public class AppConfiguration {
 
     /**
      * app short name defined by app developer
+     *
+     * @parm appShortName
      */
     private String appShortName;
 
@@ -46,11 +48,15 @@ public class AppConfiguration {
     }
 
     /**
+     *
      * larksuite.appframework.${appName1}.appId=xxx
      * larksuite.appframework.${appName1}.appSecret=
      * larksuite.appframework.${appName1}.encryptKey=
      * larksuite.appframework.${appName1}.verificationToken=
      * larksuite.appframework.${appName1}.isIsv=true
+     * @param appShortName
+     * @param properties
+     * @return AppConfiguration
      */
     public static AppConfiguration loadFromProperties(String appShortName, Properties properties) {
 
