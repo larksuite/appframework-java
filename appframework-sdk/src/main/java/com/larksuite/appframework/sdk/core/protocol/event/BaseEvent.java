@@ -19,4 +19,14 @@ public abstract class BaseEvent {
 
     private String tenantKey;
 
+    private Meta meta;
+
+    @Setter
+    @Getter
+    public static class Meta {
+
+        private String uuId;
+
+        private String ts;
+    }
 }

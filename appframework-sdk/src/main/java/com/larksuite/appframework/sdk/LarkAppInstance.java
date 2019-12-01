@@ -117,6 +117,11 @@ public class LarkAppInstance {
             return challenge(data);
         } else if (type.equals("event_callback")) {
 
+            if (!checkToken(data)) {
+                LoggerUtil.GLOBAL_LOGGER.warn("event_callback check token failed data: {}", notifyJsonData);
+                return "";
+            }
+
             Map<String, Object> eventData = (Map<String, Object>) data.get("event");
             if (eventData == null) {
                 LoggerUtil.GLOBAL_LOGGER.error("receive notify json data, but cannot find event data, data: {}", notifyJsonData);
@@ -142,6 +147,7 @@ public class LarkAppInstance {
                 return "";
             }
 
+            fillBaseEventMeta(event, data);
 
             Object r = null;
             try {
@@ -280,13 +286,24 @@ public class LarkAppInstance {
     }
 
     private String challenge(Map<String, Object> data) {
-        if (instanceContext.getApp().checkVerificationToken((String) data.get("token"))) {
-            if (instanceContext.getApp().getIsIsv()) {
-                delayResendSes.schedule(() -> instanceContext.getTokenCenter().askForResendAppTicket(), 1000, TimeUnit.MILLISECONDS);
-            }
-            return JsonUtil.larkFormatToJsonString(MixUtils.newHashMap("challenge", data.get("challenge")));
+        if (!checkToken(data)) {
+            LoggerUtil.GLOBAL_LOGGER.warn("challenge check token failed");
+            return "";
         }
-        return "";
+        if (instanceContext.getApp().getIsIsv()) {
+            delayResendSes.schedule(() -> instanceContext.getTokenCenter().askForResendAppTicket(), 1000, TimeUnit.MILLISECONDS);
+        }
+        return JsonUtil.larkFormatToJsonString(MixUtils.newHashMap("challenge", data.get("challenge")));
     }
 
+    private boolean checkToken(Map<String, Object> data) {
+        return instanceContext.getApp().checkVerificationToken((String)data.get("token"));
+    }
+
+    private void fillBaseEventMeta(BaseEvent baseEvent, Map<String, Object> data) {
+        BaseEvent.Meta meta = new BaseEvent.Meta();
+        meta.setUuId((String)data.get("uuid"));
+        meta.setTs((String)data.get("ts"));
+        baseEvent.setMeta(meta);
+    }
 }
