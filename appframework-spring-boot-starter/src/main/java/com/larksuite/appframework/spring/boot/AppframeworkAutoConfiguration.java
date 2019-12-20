@@ -10,10 +10,13 @@ package com.larksuite.appframework.spring.boot;
 import com.larksuite.appframework.sdk.AppConfiguration;
 import com.larksuite.appframework.sdk.AppEventListener;
 import com.larksuite.appframework.sdk.LarkAppInstance;
-import com.larksuite.appframework.sdk.LarkAppInstanceFactory;
 import com.larksuite.appframework.sdk.client.ImageKeyStorage;
 import com.larksuite.appframework.sdk.client.SessionManager;
+import com.larksuite.appframework.sdk.core.App;
+import com.larksuite.appframework.sdk.core.InstanceContext;
 import com.larksuite.appframework.sdk.core.auth.AppTicketStorage;
+import com.larksuite.appframework.sdk.core.protocol.OpenApiClient;
+import com.larksuite.appframework.sdk.utils.SimpleHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -141,14 +144,15 @@ public class AppframeworkAutoConfiguration implements ApplicationContextAware, B
         }
 
         appframeworkProperties.getApps().forEach(AppConfiguration::checkConfiguration);
+
         p.getApps().forEach(c -> {
-            LarkAppInstanceFactory.LarkAppInstanceBuilder builder = LarkAppInstanceFactory.builder(c);
 
-            if (appframeworkProperties.getFeishu()) {
-                builder.feishu();
-            }
+            LarkAppInstance ins = new LarkAppInstance(
+                    new InstanceContext(
+                            new App(c),
+                            new OpenApiClient(new SimpleHttpClient(), Boolean.TRUE == appframeworkProperties.getFeishu()))
+            );
 
-            LarkAppInstance ins = builder.create();
             final String appName = ins.getAppShortName();
 
             DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory) ((ConfigurableApplicationContext) applicationContext).getBeanFactory();
