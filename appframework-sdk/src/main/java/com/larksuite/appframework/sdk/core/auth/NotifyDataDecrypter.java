@@ -47,6 +47,19 @@ public class NotifyDataDecrypter {
 
         cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(key, "AES"), new IvParameterSpec(iv));
 
-        return new String(cipher.doFinal(data), StandardCharsets.UTF_8);
+        byte[] r = cipher.doFinal(data);
+        if (r.length > 0) {
+            int p = r.length - 1;
+            for (; p >= 0 && r[p] < 16; p--) {
+            }
+
+            if (p != r.length - 1) {
+                byte[] rr = new byte[p + 1];
+                System.arraycopy(r, 0, rr, 0, p + 1);
+                r = rr;
+            }
+        }
+
+        return new String(r, StandardCharsets.UTF_8);
     }
 }
