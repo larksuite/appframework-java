@@ -41,7 +41,7 @@ public class SimpleHttpClient implements HttpClient {
 
             multiPartHttpRequester.finish();
 
-            String respStr = streamToString(conn.getInputStream());
+            String respStr = responseAsString(conn);
             checkHttpCode(conn.getResponseCode(), respStr);
             return respStr;
 
@@ -72,7 +72,7 @@ public class SimpleHttpClient implements HttpClient {
                 conn.setRequestMethod("GET");
             }
 
-            String respStr = streamToString(conn.getInputStream());
+            String respStr = responseAsString(conn);
 
             checkHttpCode(conn.getResponseCode(), respStr);
 
@@ -110,7 +110,18 @@ public class SimpleHttpClient implements HttpClient {
         return conn;
     }
 
-    private String streamToString(InputStream is) throws IOException {
+    private String responseAsString(HttpURLConnection conn) throws IOException {
+        InputStream is;
+        try {
+            is = conn.getInputStream();
+        } catch (IOException e) {
+            is = conn.getErrorStream();
+        }
+
+        if (is == null) {
+            return null;
+        }
+
         final StringBuilder response = new StringBuilder();
         try (BufferedReader in = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
             String inputLine;

@@ -15,7 +15,7 @@ public class HttpException extends Exception {
     public HttpException(int httpCode, String response) {
         super(response);
         this.httpCode = httpCode;
-        this.response = response;
+        this.response = String.valueOf(response);
     }
 
     public HttpException(Exception e) {

@@ -146,6 +146,7 @@ class AppTokenManager {
                 try {
                     AppTenantAccessToken appTenantAccessToken = newTask.get();
                     if (appTenantAccessToken != null) {
+                        LoggerUtil.GLOBAL_LOGGER.debug("token refreshed for appId: {}, tenantKey: {}", app.getAppId(), tenantKey);
                         tenantTokenMap.put(tenantKey, appTenantAccessToken);
                     }
                 } catch (InterruptedException e) {
@@ -156,6 +157,8 @@ class AppTokenManager {
                     } else {
                         throw new RuntimeException(e.getCause());
                     }
+                } finally {
+                    tenantTokenFetchFutureMap.remove(tenantKey, newTask);
                 }
 
                 return;
