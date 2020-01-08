@@ -90,11 +90,9 @@
                 <version>1.6.7</version>
                 <extensions>true</extensions>
                 <configuration>
-                    <!-- 这里的id必须要和全局配置中的release id 一致 -->
                     <serverId>sonatype-nexus-staging</serverId>
                     <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                    <!-- 如果希望发布后自动执行close和release操作，此处可以调整为true -->
-                    <autoReleaseAfterClose>false</autoReleaseAfterClose>
+                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
                 </configuration>
             </plugin>
 
