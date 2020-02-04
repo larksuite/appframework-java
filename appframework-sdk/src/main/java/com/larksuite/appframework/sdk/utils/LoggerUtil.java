@@ -11,5 +11,5 @@ import org.slf4j.LoggerFactory;
 
 public class LoggerUtil {
 
-    public static final Logger GLOBAL_LOGGER = LoggerFactory.getLogger("botframework");
+    public static final Logger GLOBAL_LOGGER = LoggerFactory.getLogger("appframework");
 }

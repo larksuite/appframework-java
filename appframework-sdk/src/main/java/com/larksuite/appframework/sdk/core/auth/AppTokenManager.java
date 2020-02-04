@@ -37,7 +37,7 @@ class AppTokenManager {
 
     private final Lock appAccessTokenFetchLock = new ReentrantLock();
 
-    private final Map<String, FutureTask<AppTenantAccessToken>> tenantTokenFetchFutureMap = new ConcurrentHashMap<>();
+    private final Map<String, FutureTask<?>> tenantTokenFetchFutureMap = new ConcurrentHashMap<>();
 
     public AppTokenManager(OpenApiClient openApiClient, App app, AppTicketStorage appTicketStorage) {
         this.app = app;
@@ -77,6 +77,8 @@ class AppTokenManager {
             } finally {
                 appAccessTokenFetchLock.unlock();
             }
+
+            LoggerUtil.GLOBAL_LOGGER.debug("app access token refreshed for appId: {}", app.getAppId());
         } else {
             // if someone is already fetching token, we do nothing but wait for fetching done
             try {
@@ -88,7 +90,7 @@ class AppTokenManager {
     }
 
     public void refreshTenantToken(String tenantKey) throws LarkClientException {
-        FutureTask<AppTenantAccessToken> doingTask = tenantTokenFetchFutureMap.get(tenantKey);
+        FutureTask<?> doingTask = tenantTokenFetchFutureMap.get(tenantKey);
 
         if (doingTask == null) {
 
@@ -100,6 +102,7 @@ class AppTokenManager {
                     }
 
                     if (appAccessToken == null || appAccessToken.isExpired()) {
+                        appAccessToken = null;
                         return null;
                     }
 
@@ -124,17 +127,29 @@ class AppTokenManager {
                 }
             };
 
-            FutureTask<AppTenantAccessToken> newTask = new FutureTask<>(() -> {
+            FutureTask<?> newTask = new FutureTask<Void>(() -> {
+                AppTenantAccessToken appTenantAccessToken;
                 // retry fetch tenant access token after refresh app access token
                 try {
-                    return c.call();
+                    appTenantAccessToken = c.call();
                 } catch (LarkClientException e) {
                     if (e.getCode() == LarkClientException.APP_ACCESS_TOKEN_INVALID) {
                         refreshAppAccessToken();
-                        return c.call();
+                        appTenantAccessToken =  c.call();
+                    } else {
+                        throw e;
                     }
-                    throw e;
                 }
+
+                if (appTenantAccessToken != null) {
+                    tenantTokenMap.put(tenantKey, appTenantAccessToken);
+                    LoggerUtil.GLOBAL_LOGGER.debug("tenant access token refreshed for appId: {}, tenantKey: {}", app.getAppId(), tenantKey);
+                } else {
+                    LoggerUtil.GLOBAL_LOGGER.error("tenant access token refreshed failed for appId: {}, tenantKey: {}", app.getAppId(), tenantKey);
+                }
+
+                return null;
+
             });
 
             doingTask = tenantTokenFetchFutureMap.putIfAbsent(tenantKey, newTask);
@@ -144,11 +159,8 @@ class AppTokenManager {
                 newTask.run();
 
                 try {
-                    AppTenantAccessToken appTenantAccessToken = newTask.get();
-                    if (appTenantAccessToken != null) {
-                        LoggerUtil.GLOBAL_LOGGER.debug("token refreshed for appId: {}, tenantKey: {}", app.getAppId(), tenantKey);
-                        tenantTokenMap.put(tenantKey, appTenantAccessToken);
-                    }
+                    newTask.get();
+
                 } catch (InterruptedException e) {
                     // wont happen here
                 } catch (ExecutionException e) {
@@ -168,6 +180,8 @@ class AppTokenManager {
         try {
             // others doing the task, wait for it done
             doingTask.get();
+            LoggerUtil.GLOBAL_LOGGER.debug("wait for refreshed for appId: {}, tenantKey: {},  done.", app.getAppId(), tenantKey);
+
         } catch (InterruptedException e) {
             LoggerUtil.GLOBAL_LOGGER.error("refreshTenantToken InterruptedException ", e);
         } catch (ExecutionException e) {
