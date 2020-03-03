@@ -41,9 +41,31 @@ public class SimpleHttpClient implements HttpClient {
 
             multiPartHttpRequester.finish();
 
-            String respStr = responseAsString(conn);
-            checkHttpCode(conn.getResponseCode(), respStr);
-            return respStr;
+            InputStream is = getResultDataInputStream(conn);
+            return streamAsString(is);
+
+        } catch (IOException ioe) {
+            throw new HttpException(ioe);
+        } finally {
+            if (conn != null) {
+                conn.disconnect();
+            }
+        }
+    }
+
+    @Override
+    public InputStream doGetFile(String url, int connectTimeout, int readTimeout, Map<String, String> headers) throws HttpException {
+        HttpURLConnection conn = null;
+        try {
+            conn = newHttpConnection(url, connectTimeout, readTimeout, headers);
+            conn.setRequestMethod("GET");
+
+            InputStream is = getResultDataInputStream(conn);
+
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            MixUtils.copyStream(is, bos);
+
+            return new ByteArrayInputStream(bos.toByteArray());
 
         } catch (IOException ioe) {
             throw new HttpException(ioe);
@@ -72,11 +94,8 @@ public class SimpleHttpClient implements HttpClient {
                 conn.setRequestMethod("GET");
             }
 
-            String respStr = responseAsString(conn);
-
-            checkHttpCode(conn.getResponseCode(), respStr);
-
-            return respStr;
+            InputStream is = getResultDataInputStream(conn);
+            return streamAsString(is);
 
         } catch (IOException ioe) {
             throw new HttpException(ioe);
@@ -87,10 +106,17 @@ public class SimpleHttpClient implements HttpClient {
         }
     }
 
-    private void checkHttpCode(int httpCode, String respStr) throws HttpException {
-        if (httpCode != HttpURLConnection.HTTP_OK) {
-            throw new HttpException(httpCode, respStr);
+    private InputStream getResultDataInputStream(HttpURLConnection conn) throws HttpException, IOException {
+        if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) {
+            InputStream is;
+            try {
+                is = conn.getInputStream();
+            } catch (IOException e) {
+                is = conn.getErrorStream();
+            }
+            throw new HttpException(conn.getResponseCode(), streamAsString(is));
         }
+        return conn.getInputStream();
     }
 
     private HttpURLConnection newHttpConnection(String url, int connectTimeout, int readTimeout, Map<String, String> header) throws IOException {
@@ -110,18 +136,7 @@ public class SimpleHttpClient implements HttpClient {
         return conn;
     }
 
-    private String responseAsString(HttpURLConnection conn) throws IOException {
-        InputStream is;
-        try {
-            is = conn.getInputStream();
-        } catch (IOException e) {
-            is = conn.getErrorStream();
-        }
-
-        if (is == null) {
-            return null;
-        }
-
+    private String streamAsString(InputStream is) throws IOException {
         final StringBuilder response = new StringBuilder();
         try (BufferedReader in = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
             String inputLine;

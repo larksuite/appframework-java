@@ -92,6 +92,16 @@ public class LarkClient {
         return doUploadImage(originName, imageFile, null);
     }
 
+    public InputStream fetchImageIsv(String imageKey, String tenantKey) throws LarkClientException {
+        checkAppType(true);
+        return doFetchImage(imageKey, tenantKey);
+    }
+
+    public InputStream fetchImage(String imageKey) throws LarkClientException {
+        checkAppType(false);
+        return doFetchImage(imageKey, null);
+    }
+
     public GroupListResult fetchGroupListIsv(Integer pageSize, String pageToken, String tenantKey) throws LarkClientException {
         checkAppType(true);
         return doFetchGroupList(pageSize, pageToken, tenantKey);
@@ -167,6 +177,16 @@ public class LarkClient {
             return result;
         }, tenantKey);
 
+    }
+
+    private InputStream doFetchImage(String imageKey, String tenantKey) throws LarkClientException {
+        return retryIfTenantAccessTokenInvalid(() -> {
+            final String tenantAccessToken = getTenantAccessTokenOrException(tenantKey);
+            FetchImageRequest req = new FetchImageRequest();
+            req.setImageKey(imageKey);
+            return openApiClient.fetchImage(tenantAccessToken, req);
+
+        }, tenantKey);
     }
 
     private BatchSendChatMessageResult doBatchSendChatMessage(BatchMessageDestination dest, Message message, String tenantKey) throws LarkClientException {
