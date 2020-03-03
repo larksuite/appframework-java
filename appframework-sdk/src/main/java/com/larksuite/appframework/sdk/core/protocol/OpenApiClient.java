@@ -13,6 +13,7 @@ import com.larksuite.appframework.sdk.utils.JsonUtil;
 import com.larksuite.appframework.sdk.utils.MixUtils;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,7 @@ public class OpenApiClient {
     private static final String SendMessagePath = "/open-apis/message/v4/send/";
     private static final String SendMessageBatchPath = "/open-apis/message/v4/batch_send/";
     private static final String UploadImagePath = "/open-apis/image/v4/put/";
+    private static final String FetchImagePath = "/open-apis/image/v4/get";
     private static final String FetchChatInfoPath = "/open-apis/chat/v4/info/";
     private static final String FetchChatListPath = "/open-apis/chat/v4/list/";
 
@@ -102,6 +104,13 @@ public class OpenApiClient {
         return call(() -> httpClient.doPostJson(basePath + MiniProgramLoginValidatePath, 3000, 3000, createHeaderWithAuthorization(appAccessToken), JsonUtil.larkFormatToJsonString(req)), MiniProgramLoginResponse.class);
     }
 
+    public InputStream fetchImage(String tenantAccessToken, FetchImageRequest req) throws LarkClientException {
+        try {
+            return httpClient.doGetFile(buildGetUrl(basePath + FetchImagePath, req), 3000, 3000, createHeaderWithAuthorization(tenantAccessToken));
+        } catch (HttpException e) {
+            throw translateToLarkClientException(e);
+        }
+    }
 
     private static <T extends BaseResponse> T transCodeToException(T t) throws LarkClientException {
         if (t.getCode() == 0) {

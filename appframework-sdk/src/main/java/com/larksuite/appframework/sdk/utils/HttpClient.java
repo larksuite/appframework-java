@@ -6,7 +6,6 @@
 
 package com.larksuite.appframework.sdk.utils;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -21,6 +20,8 @@ public interface HttpClient {
     String doPostJson(String url, int connectTimeout, int readTimeout, Map<String, String> headers, String data) throws HttpException;
 
     String doPostFile(String url, int connectTimeout, int readTimeout, Map<String, String> headers, List<Field> files) throws HttpException;
+
+    InputStream doGetFile(String url, int connectTimeout, int readTimeout, Map<String, String> headers) throws HttpException;
 
     abstract class Field {
 
