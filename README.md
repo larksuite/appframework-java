@@ -292,7 +292,7 @@ public class EventHandlers {
 
         try {
             larkClient.sendChatMessage(
-                    MessageDestinations.ChatId(event.getOpenChatId()),
+                    MessageDestinations.chatId(event.getOpenChatId()),
                     new TextMessage("Hello, I'm Echo Robot, try say to me."));
         } catch (LarkClientException e) {
             e.printStackTrace();
