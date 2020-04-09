@@ -20,6 +20,7 @@ import static com.larksuite.appframework.sdk.utils.Constants.*;
 import static com.larksuite.appframework.sdk.utils.Constants.APP_SECRET;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
 public class MockOpenApiClient extends OpenApiClient {
 
@@ -228,6 +229,97 @@ public class MockOpenApiClient extends OpenApiClient {
         data.setOpenId("openId");
 
         response.setData(data);
+        return response;
+    }
+
+    @Override
+    public UpdateChatInfoResponse updateChatInfo(String tenantAccessToken, UpdateChatInfoRequest req) throws LarkClientException {
+        assertEquals("chat name", req.getName());
+        assertEquals(OPEN_ID, req.getOwnerOpenId());
+        assertEquals(USER_ID, req.getOwnerUserId());
+        assertEquals(true, req.getOnlyOwnerAdd());
+        assertEquals(true, req.getOnlyOwnerAtAll());
+        assertEquals(false, req.getOnlyOwnerEdit());
+        assertEquals(false, req.getShareAllowed());
+
+        UpdateChatInfoResponse response = new UpdateChatInfoResponse();
+        response.setCode(0);
+        response.setMsg("");
+
+        UpdateChatInfoResponse.Data data = new UpdateChatInfoResponse.Data();
+        data.setChatId(CHART_ID);
+        response.setData(data);
+        return response;
+    }
+
+    @Override
+    public CreateChatResponse createChat(String tenantAccessToken, CreateChatRequest req) throws LarkClientException {
+
+        assertEquals("chat name", req.getName());
+        assertIterableEquals(OPEN_IDS, req.getOpenIds());
+        assertIterableEquals(USER_IDS, req.getUserIds());
+        assertEquals(true, req.getOnlyOwnerAdd());
+        assertEquals(true, req.getOnlyOwnerAtAll());
+        assertEquals(false, req.getOnlyOwnerEdit());
+        assertEquals(false, req.getShareAllowed());
+
+
+        assertEquals("enUs", req.getI18nNames().getEnUs());
+
+
+
+        CreateChatResponse response = new CreateChatResponse();
+        response.setCode(0);
+        response.setMsg("");
+
+        CreateChatResponse.Data data = new CreateChatResponse.Data();
+        data.setInvalidOpenIds(INVALID_OPEN_IDS);
+        data.setInvalidUserIds(INVALID_USER_IDS);
+
+        response.setData(data);
+        return response;
+    }
+
+    @Override
+    public AddUserToChatResponse addUserToChat(String tenantAccessToken, AddUserToChatRequest req) throws LarkClientException {
+
+        assertEquals(CHART_ID, req.getChatId());
+        assertIterableEquals(OPEN_IDS, req.getOpenIds());
+        assertIterableEquals(USER_IDS, req.getUserIds());
+
+        AddUserToChatResponse response = new AddUserToChatResponse();
+        response.setCode(0);
+        response.setMsg("");
+
+        AddUserToChatResponse.Data data = new AddUserToChatResponse.Data();
+        data.setInvalidOpenIds(INVALID_OPEN_IDS);
+        data.setInvalidUserIds(INVALID_USER_IDS);
+
+        response.setData(data);
+        return response;
+
+    }
+
+    @Override
+    public DeleteUserFromChatResponse deleteUserFromChat(String tenantAccessToken, DeleteUserFromChatRequest req) throws LarkClientException {
+        DeleteUserFromChatResponse response = new DeleteUserFromChatResponse();
+        response.setCode(0);
+        response.setMsg("");
+
+        DeleteUserFromChatResponse.Data data = new DeleteUserFromChatResponse.Data();
+        data.setInvalidOpenIds(INVALID_OPEN_IDS);
+        data.setInvalidUserIds(INVALID_USER_IDS);
+
+        response.setData(data);
+        return response;
+    }
+
+    @Override
+    public DisbandChatResponse disbandChat(String tenantAccessToken, DisbandChatRequest req) throws LarkClientException {
+        DisbandChatResponse response = new DisbandChatResponse();
+        response.setCode(RESPONSE_CODE);
+        response.setMsg("some exception");
+
         return response;
     }
 }

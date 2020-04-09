@@ -6,6 +6,7 @@
 
 package com.larksuite.appframework.sdk.core.protocol;
 
+import com.larksuite.appframework.sdk.Version;
 import com.larksuite.appframework.sdk.exception.LarkClientException;
 import com.larksuite.appframework.sdk.utils.HttpClient;
 import com.larksuite.appframework.sdk.utils.HttpException;
@@ -15,22 +16,41 @@ import com.larksuite.appframework.sdk.utils.MixUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class OpenApiClient {
 
+    private static final Map<String, String> BASE_HEADER = MixUtils.newHashMap("user-agent", String.format("appframework-java(%s)", Version.CURRENT));
+
+    /**
+     * auth
+     */
     private static final String FetchAppAccessTokenInternalPath = "/open-apis/auth/v3/app_access_token/internal/";
     private static final String FetchAppAccessTokenIsvPath = "/open-apis/auth/v3/app_access_token/";
     private static final String FetchTenantAccessTokenInternalPath = "/open-apis/auth/v3/tenant_access_token/internal/";
     private static final String FetchTenantAccessTokenIsvPath = "/open-apis/auth/v3/tenant_access_token/";
     private static final String ResendAppTicketPath = "/open-apis/auth/v3/app_ticket/resend";
+
+    /**
+     * message
+     */
     private static final String SendMessagePath = "/open-apis/message/v4/send/";
     private static final String SendMessageBatchPath = "/open-apis/message/v4/batch_send/";
     private static final String UploadImagePath = "/open-apis/image/v4/put/";
     private static final String FetchImagePath = "/open-apis/image/v4/get";
+
+    /**
+     * chat
+     */
     private static final String FetchChatInfoPath = "/open-apis/chat/v4/info/";
     private static final String FetchChatListPath = "/open-apis/chat/v4/list/";
+    private static final String UpdateChatInfoPath = "/open-apis/chat/v4/update/";
+    private static final String CreateChatPath = "/open-apis/chat/v4/create/";
+    private static final String AddUserToChatPath = "/open-apis/chat/v4/chatter/add/";
+    private static final String DeleteUserFromChatPath = "/open-apis/chat/v4/chatter/delete/";
+    private static final String DisbandChatPath = "/open-apis/chat/v4/disband/";
 
     private static final String MiniProgramLoginValidatePath = "/open-apis/mina/v2/tokenLoginValidate";
 
@@ -80,24 +100,44 @@ public class OpenApiClient {
         return call(() -> httpClient.doGet(buildGetUrl(basePath + FetchChatListPath, req), 3000, 3000, createHeaderWithAuthorization(tenantAccessToken)), FetchChatListResponse.class);
     }
 
+    public UpdateChatInfoResponse updateChatInfo(String tenantAccessToken, UpdateChatInfoRequest req) throws LarkClientException {
+        return call(() -> httpClient.doPostJson(basePath + UpdateChatInfoPath, 3000, 3000, createHeaderWithAuthorization(tenantAccessToken), JsonUtil.larkFormatToJsonString(req)), UpdateChatInfoResponse.class);
+    }
+
+    public CreateChatResponse createChat(String tenantAccessToken, CreateChatRequest req) throws LarkClientException {
+        return call(() -> httpClient.doPostJson(basePath + CreateChatPath, 3000, 3000, createHeaderWithAuthorization(tenantAccessToken), JsonUtil.larkFormatToJsonString(req)), CreateChatResponse.class);
+    }
+
+    public AddUserToChatResponse addUserToChat(String tenantAccessToken, AddUserToChatRequest req) throws LarkClientException {
+        return call(() -> httpClient.doPostJson(basePath + AddUserToChatPath, 3000, 3000, createHeaderWithAuthorization(tenantAccessToken), JsonUtil.larkFormatToJsonString(req)), AddUserToChatResponse.class);
+    }
+
+    public DeleteUserFromChatResponse deleteUserFromChat(String tenantAccessToken, DeleteUserFromChatRequest req) throws LarkClientException {
+        return call(() -> httpClient.doPostJson(basePath + DeleteUserFromChatPath, 3000, 3000, createHeaderWithAuthorization(tenantAccessToken), JsonUtil.larkFormatToJsonString(req)), DeleteUserFromChatResponse.class);
+    }
+
+    public DisbandChatResponse disbandChat(String tenantAccessToken, DisbandChatRequest req) throws LarkClientException {
+        return call(() -> httpClient.doPostJson(basePath + DisbandChatPath, 3000, 3000, createHeaderWithAuthorization(tenantAccessToken), JsonUtil.larkFormatToJsonString(req)), DisbandChatResponse.class);
+    }
+
     public FetchAppAccessTokenInternalResponse fetchAppAccessTokenInternal(FetchAppAccessTokenInternalRequest req) throws LarkClientException {
-        return call(() -> httpClient.doPostJson(basePath + FetchAppAccessTokenInternalPath, 3000, 3000, null, JsonUtil.larkFormatToJsonString(req)), FetchAppAccessTokenInternalResponse.class);
+        return call(() -> httpClient.doPostJson(basePath + FetchAppAccessTokenInternalPath, 3000, 3000, newHeader(), JsonUtil.larkFormatToJsonString(req)), FetchAppAccessTokenInternalResponse.class);
     }
 
     public FetchAppAccessTokenIsvResponse fetchAppAccessTokenIsv(FetchAppAccessTokenIsvRequest req) throws LarkClientException {
-        return call(() -> httpClient.doPostJson(basePath + FetchAppAccessTokenIsvPath, 3000, 3000, null, JsonUtil.larkFormatToJsonString(req)), FetchAppAccessTokenIsvResponse.class);
+        return call(() -> httpClient.doPostJson(basePath + FetchAppAccessTokenIsvPath, 3000, 3000, newHeader(), JsonUtil.larkFormatToJsonString(req)), FetchAppAccessTokenIsvResponse.class);
     }
 
     public FetchTenantAccessTokenInternalResponse fetchTenantAccessTokenInternal(FetchTenantAccessTokenInternalRequest req) throws LarkClientException {
-        return call(() -> httpClient.doPostJson(basePath + FetchTenantAccessTokenInternalPath, 3000, 3000, null, JsonUtil.larkFormatToJsonString(req)), FetchTenantAccessTokenInternalResponse.class);
+        return call(() -> httpClient.doPostJson(basePath + FetchTenantAccessTokenInternalPath, 3000, 3000, newHeader(), JsonUtil.larkFormatToJsonString(req)), FetchTenantAccessTokenInternalResponse.class);
     }
 
     public FetchTenantAccessTokenIsvResponse fetchTenantAccessTokenIsv(FetchTenantAccessTokenIsvRequest req) throws LarkClientException {
-        return call(() -> httpClient.doPostJson(basePath + FetchTenantAccessTokenIsvPath, 3000, 3000, null, JsonUtil.larkFormatToJsonString(req)), FetchTenantAccessTokenIsvResponse.class);
+        return call(() -> httpClient.doPostJson(basePath + FetchTenantAccessTokenIsvPath, 3000, 3000, newHeader(), JsonUtil.larkFormatToJsonString(req)), FetchTenantAccessTokenIsvResponse.class);
     }
 
     public ResendAppTicketResponse resendAppTicket(ResendAppTicketRequest req) throws LarkClientException {
-        return call(() -> httpClient.doPostJson(basePath + ResendAppTicketPath, 3000, 3000, null, JsonUtil.larkFormatToJsonString(req)), ResendAppTicketResponse.class);
+        return call(() -> httpClient.doPostJson(basePath + ResendAppTicketPath, 3000, 3000, newHeader(), JsonUtil.larkFormatToJsonString(req)), ResendAppTicketResponse.class);
     }
 
     public MiniProgramLoginResponse miniProgramLoginValidate(String appAccessToken, MiniProgramLoginRequest req) throws LarkClientException {
@@ -119,8 +159,14 @@ public class OpenApiClient {
         throw new LarkClientException(t.getCode(), t.getMsg());
     }
 
+    private static Map<String, String> newHeader() {
+        return new HashMap<>(BASE_HEADER);
+    }
+
     private static Map<String, String> createHeaderWithAuthorization(String token) {
-        return MixUtils.newHashMap("Authorization", "Bearer " + token);
+        Map<String, String> header = newHeader();
+        header.put("Authorization", "Bearer " + token);
+        return header;
     }
 
     private static <T extends BaseResponse> T call(RemoteCaller c, Class<T> responseClass) throws LarkClientException {
@@ -160,7 +206,7 @@ public class OpenApiClient {
     private String buildGetUrl(String url, Object o) {
         Map m;
         if (o instanceof Map) {
-            m = (Map)o;
+            m = (Map) o;
         } else {
             m = JsonUtil.larkFormatConvertToJavaObject(o, Map.class);
         }

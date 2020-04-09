@@ -25,13 +25,18 @@ public class Constants {
 
     public static String CODE = "CODE";
 
-    public static List<String > OPEN_IDS = Lists.newArrayList("openId");
-    public static List<String > USER_IDS = Lists.newArrayList("userId");
+    public static String OPEN_ID = "openId";
+    public static String USER_ID = "userId";
+
+    public static List<String > OPEN_IDS = Lists.newArrayList(OPEN_ID);
+    public static List<String > USER_IDS = Lists.newArrayList(USER_ID);
     public static List<String > DEPARTMENT_IDS = Lists.newArrayList("departmentId");
 
     public static List<String > INVALID_OPEN_IDS = Lists.newArrayList("invalidOpenId");
     public static List<String > INVALID_USER_IDS = Lists.newArrayList("invalidUserId");
     public static List<String > INVALID_DEPARTMENT_IDS = Lists.newArrayList("invalidDepartmentId");
     public static byte[] IMAGE_CONTENT = new byte[]{1, 2, 3, 4};
+
+    public static int RESPONSE_CODE = 10000;
 
 }

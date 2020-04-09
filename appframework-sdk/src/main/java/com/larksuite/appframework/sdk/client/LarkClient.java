@@ -20,6 +20,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -58,7 +59,7 @@ public class LarkClient {
      *
      * @param dest      where will this message send to
      * @param tenantKey tenantKey
-     * @param message message
+     * @param message   message
      * @return messageId
      * @throws LarkClientException throws a LarkClientException
      */
@@ -122,6 +123,55 @@ public class LarkClient {
         return doFetchGroupInfo(chatId, null);
     }
 
+    public UserInChatOperationResult createChat(ChatInfo chatInfo) throws LarkClientException {
+        checkAppType(false);
+        return doCreateChat(chatInfo, null);
+    }
+
+    public UserInChatOperationResult createChatIsv(ChatInfo chatInfo, String tenantKey) throws LarkClientException {
+        checkAppType(true);
+        return doCreateChat(chatInfo, tenantKey);
+    }
+
+    public String updateChatInfo(String chatId, ChatInfo chatInfo) throws LarkClientException {
+        checkAppType(false);
+        return doUpdateChatInfo(chatId, chatInfo, null);
+    }
+
+    public String updateChatInfoIsv(String chatId, ChatInfo chatInfo, String tenantKey) throws LarkClientException {
+        checkAppType(true);
+        return doUpdateChatInfo(chatId, chatInfo, tenantKey);
+    }
+
+    public UserInChatOperationResult addUserToChat(String chatId, List<User> users) throws LarkClientException {
+        checkAppType(false);
+        return doAddUserToChat(chatId, users, null);
+    }
+
+    public UserInChatOperationResult addUserToChatIsv(String chatId, List<User> users, String tenantKey) throws LarkClientException {
+        checkAppType(true);
+        return doAddUserToChat(chatId, users, tenantKey);
+    }
+
+    public UserInChatOperationResult deleteUserFromChat(String chatId, List<User> users) throws LarkClientException {
+        checkAppType(false);
+        return doDeleteUserFromChat(chatId, users, null);
+    }
+
+    public UserInChatOperationResult deleteUserFromChatIsv(String chatId, List<User> users, String tenantKey) throws LarkClientException {
+        checkAppType(true);
+        return doDeleteUserFromChat(chatId, users, tenantKey);
+    }
+
+    public void disbandChat(String chatId) throws LarkClientException {
+        checkAppType(false);
+        doDisbandChat(chatId, null);
+    }
+
+    public void disbandChatIsv(String chatId, String tenantKey) throws LarkClientException {
+        checkAppType(true);
+        doDisbandChat(chatId, tenantKey);
+    }
 
     private GroupInfoResult doFetchGroupInfo(String chatId, String tenantKey) throws LarkClientException {
 
@@ -176,7 +226,6 @@ public class LarkClient {
             result.setImageKey(resp.getData().getImageKey());
             return result;
         }, tenantKey);
-
     }
 
     private InputStream doFetchImage(String imageKey, String tenantKey) throws LarkClientException {
@@ -186,6 +235,115 @@ public class LarkClient {
             req.setImageKey(imageKey);
             return openApiClient.fetchImage(tenantAccessToken, req);
 
+        }, tenantKey);
+    }
+
+    private UserInChatOperationResult doCreateChat(ChatInfo chatInfo, String tenantKey) throws LarkClientException {
+        return retryIfTenantAccessTokenInvalid(() -> {
+            final String tenantAccessToken = getTenantAccessTokenOrException(tenantKey);
+
+            CreateChatRequest req = new CreateChatRequest();
+            req.setUserIds(chatInfo.getUserIds());
+            req.setOpenIds(chatInfo.getOpenIds());
+            req.setName(chatInfo.getName());
+            req.setOnlyOwnerAdd(chatInfo.getOnlyOwnerAdd());
+            req.setShareAllowed(chatInfo.getShareAllowed());
+            req.setOnlyOwnerAtAll(chatInfo.getOnlyOwnerAtAll());
+            req.setOnlyOwnerEdit(chatInfo.getOnlyOwnerEdit());
+            req.setI18nNames(chatInfo.getI18nNames());
+
+            CreateChatResponse resp = openApiClient.createChat(tenantAccessToken, req);
+
+            UserInChatOperationResult result = new UserInChatOperationResult();
+            result.setChatId(resp.getData().getChatId());
+            result.setInvalidOpenIds(resp.getData().getInvalidOpenIds());
+            result.setInvalidUserIds(resp.getData().getInvalidUserIds());
+            return result;
+        }, tenantKey);
+    }
+
+    private String doUpdateChatInfo(String chatId, ChatInfo chatInfo, String tenantKey) throws LarkClientException {
+        return retryIfTenantAccessTokenInvalid(() -> {
+            final String tenantAccessToken = getTenantAccessTokenOrException(tenantKey);
+            UpdateChatInfoRequest req = new UpdateChatInfoRequest();
+            req.setChatId(chatId);
+            req.setOwnerUserId(chatInfo.getOwnerUserId());
+            req.setOwnerOpenId(chatInfo.getOwnerOpenId());
+            req.setName(chatInfo.getName());
+            req.setOnlyOwnerAdd(chatInfo.getOnlyOwnerAdd());
+            req.setShareAllowed(chatInfo.getShareAllowed());
+            req.setOnlyOwnerAtAll(chatInfo.getOnlyOwnerAtAll());
+            req.setOnlyOwnerEdit(chatInfo.getOnlyOwnerEdit());
+            req.setI18nNames(chatInfo.getI18nNames());
+
+            UpdateChatInfoResponse resp = openApiClient.updateChatInfo(tenantAccessToken, req);
+            return resp.getData().getChatId();
+        }, tenantKey);
+    }
+
+    private UserInChatOperationResult doAddUserToChat(String chatId, List<User> users, String tenantKey) throws LarkClientException {
+        return retryIfTenantAccessTokenInvalid(() -> {
+            final String tenantAccessToken = getTenantAccessTokenOrException(tenantKey);
+
+            AddUserToChatRequest req = new AddUserToChatRequest();
+            req.setChatId(chatId);
+
+            List<String> openIds = new ArrayList<>(users.size());
+            List<String> userIds = new ArrayList<>(users.size());
+            for (User user : users) {
+                if (user.getOpenId() != null) {
+                    openIds.add(user.getOpenId());
+                } else if (user.getUserId() != null) {
+                    userIds.add(user.getUserId());
+                }
+            }
+            req.setOpenIds(openIds);
+            req.setUserIds(userIds);
+
+            AddUserToChatResponse resp = openApiClient.addUserToChat(tenantAccessToken, req);
+            UserInChatOperationResult result = new UserInChatOperationResult();
+            result.setChatId(chatId);
+            result.setInvalidOpenIds(resp.getData().getInvalidOpenIds());
+            result.setInvalidUserIds(resp.getData().getInvalidUserIds());
+            return result;
+        }, tenantKey);
+    }
+
+    private UserInChatOperationResult doDeleteUserFromChat(String chatId, List<User> users, String tenantKey) throws LarkClientException {
+        return retryIfTenantAccessTokenInvalid(() -> {
+            final String tenantAccessToken = getTenantAccessTokenOrException(tenantKey);
+            DeleteUserFromChatRequest req = new DeleteUserFromChatRequest();
+            req.setChatId(chatId);
+
+            List<String> openIds = new ArrayList<>(users.size());
+            List<String> userIds = new ArrayList<>(users.size());
+            for (User user : users) {
+                if (user.getOpenId() != null) {
+                    openIds.add(user.getOpenId());
+                } else if (user.getUserId() != null) {
+                    userIds.add(user.getUserId());
+                }
+            }
+            req.setOpenIds(openIds);
+            req.setUserIds(userIds);
+
+            DeleteUserFromChatResponse resp = openApiClient.deleteUserFromChat(tenantAccessToken, req);
+            UserInChatOperationResult result = new UserInChatOperationResult();
+            result.setChatId(chatId);
+            result.setInvalidOpenIds(resp.getData().getInvalidOpenIds());
+            result.setInvalidUserIds(resp.getData().getInvalidUserIds());
+            return result;
+        }, tenantKey);
+    }
+
+    private void doDisbandChat(String chatId, String tenantKey) throws LarkClientException {
+        retryIfTenantAccessTokenInvalid(() -> {
+            final String tenantAccessToken = getTenantAccessTokenOrException(tenantKey);
+
+            DisbandChatRequest req = new DisbandChatRequest();
+            req.setChatId(chatId);
+            openApiClient.disbandChat(tenantAccessToken, req);
+            return null;
         }, tenantKey);
     }
 
@@ -326,5 +484,14 @@ public class LarkClient {
         private String ownerOpenId;
 
         private String ownerUserId;
+    }
+
+    @Getter
+    @Setter
+    @ToString
+    public static class UserInChatOperationResult {
+        private String chatId;
+        private List<String> invalidOpenIds;
+        private List<String> invalidUserIds;
     }
 }
