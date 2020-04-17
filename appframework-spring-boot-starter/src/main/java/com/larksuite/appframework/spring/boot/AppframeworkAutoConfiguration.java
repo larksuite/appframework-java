@@ -58,7 +58,7 @@ public class AppframeworkAutoConfiguration implements ApplicationContextAware, B
 
     private AppframeworkProperties appframeworkProperties;
 
-    protected ApplicationContext applicationContext;
+    private ApplicationContext applicationContext;
 
     private Environment environment;
 
@@ -176,59 +176,113 @@ public class AppframeworkAutoConfiguration implements ApplicationContextAware, B
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
     }
 
-    private boolean appTicketStorageInited = false;
-    private boolean imageKeyStorageInited = false;
-    private boolean sessionManagerInited = false;
-
-    @Override
-    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-        if (bean instanceof AppTicketStorage) {
-            if (appTicketStorageInited) {
-                throw new IllegalStateException("find multi AppTicketStorage beans");
-            }
-            for (LarkAppInstance ins : instanceMap.values()) {
-                if (ins.getApp().getIsIsv()) {
-                    ins.getInstanceContext().createTokenCenter((AppTicketStorage)bean);
-
-                    LOGGER.info("find appTicketStorage for ISV app: {}", ins.getAppShortName());
-                }
-            }
-            appTicketStorageInited = true;
-        } else if (bean instanceof ImageKeyStorage) {
-            if (imageKeyStorageInited) {
-                throw new IllegalStateException("find multi ImageKeyStorage beans");
-            }
-            for (LarkAppInstance ins : instanceMap.values()) {
-                ins.getInstanceContext().createImageKeyManager((ImageKeyStorage)bean);
-
-                LOGGER.info("create ImageKeyManager for app: {}", ins.getAppShortName());
-            }
-            imageKeyStorageInited = true;
-        } else if (bean instanceof SessionManager) {
-            if (sessionManagerInited) {
-                throw new IllegalStateException("find multi SessionManager beans");
-            }
-
-            for (LarkAppInstance ins : instanceMap.values()) {
-                ins.getInstanceContext().createMiniProgramAuthenticator((SessionManager)bean, appframeworkProperties.getCookieDomainParentLevel());
-
-                LOGGER.info("create MiniProgramAuthenticator for app: {}", ins.getAppShortName());
-            }
-            sessionManagerInited = true;
-        }
-
-        return bean;
-    }
-
     @Override
     public void setEnvironment(Environment environment) {
         this.environment = environment;
     }
 
+    private AppframeworkComponentInitializer appframeworkComponentInitializer = new AppframeworkComponentInitializer();
+
+    @Override
+    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+
+        if (appframeworkComponentInitializer.isComponent(bean)) {
+            appframeworkComponentInitializer.addComponent(bean);
+        }
+
+        return bean;
+    }
+
+    private class AppframeworkComponentInitializer {
+
+        AppTicketStorage appTicketStorage;
+        SessionManager sessionManager;
+        ImageKeyStorage imageKeyStorage;
+
+        boolean appTicketStorageInited = false;
+        boolean imageKeyStorageInited = false;
+        boolean sessionManagerInited = false;
+
+        boolean isComponent(Object bean) {
+            return (bean instanceof AppTicketStorage || bean instanceof SessionManager || bean instanceof ImageKeyStorage);
+        }
+
+        void addComponent(Object bean) {
+
+            if (bean instanceof AppTicketStorage) {
+                checkBeanDuplicated(appTicketStorage, AppTicketStorage.class);
+                appTicketStorage = (AppTicketStorage) bean;
+
+            } else if (bean instanceof SessionManager) {
+                checkBeanDuplicated(sessionManager, SessionManager.class);
+                sessionManager = (SessionManager) bean;
+
+            } else if (bean instanceof ImageKeyStorage) {
+                checkBeanDuplicated(imageKeyStorage, ImageKeyStorage.class);
+                imageKeyStorage = (ImageKeyStorage) bean;
+            }
+
+            tryInitAll();
+        }
+
+        void tryInitAll() {
+            if (!appTicketStorageInited) {
+                initAppTicketStorage();
+            }
+            if (appTicketStorageInited && !imageKeyStorageInited) {
+                initImageKeyStorage();
+            }
+            if (appTicketStorageInited && !sessionManagerInited) {
+                initSessionManager();
+            }
+        }
+
+        void initAppTicketStorage() {
+            if (appTicketStorage != null) {
+                for (LarkAppInstance ins : instanceMap.values()) {
+                    if (ins.getApp().getIsIsv()) {
+                        ins.getInstanceContext().createTokenCenter(appTicketStorage);
+                        LOGGER.info("find appTicketStorage for ISV app: {}", ins.getAppShortName());
+                    }
+                }
+                appTicketStorageInited = true;
+            }
+        }
+
+        void initSessionManager() {
+            if (sessionManager != null) {
+                for (LarkAppInstance ins : instanceMap.values()) {
+                    ins.getInstanceContext().createMiniProgramAuthenticator(sessionManager, appframeworkProperties.getCookieDomainParentLevel());
+
+                    LOGGER.info("create MiniProgramAuthenticator for app: {}", ins.getAppShortName());
+                }
+                sessionManagerInited = true;
+            }
+        }
+
+        void initImageKeyStorage() {
+            if (imageKeyStorage != null) {
+                for (LarkAppInstance ins : instanceMap.values()) {
+                    ins.getInstanceContext().createImageKeyManager(imageKeyStorage);
+
+                    LOGGER.info("create ImageKeyManager for app: {}", ins.getAppShortName());
+                }
+                imageKeyStorageInited = true;
+            }
+        }
+
+        void checkBeanDuplicated(Object existed, Class<?> clazz) {
+            if (existed == null) {
+                return;
+            }
+            throw new IllegalStateException("find multi beans " + clazz.getName());
+        }
+    }
+
     @EventListener(ApplicationStartedEvent.class)
     public void onApplicationEvent(ApplicationStartedEvent event) {
 
-        if (!appTicketStorageInited) {
+        if (!appframeworkComponentInitializer.appTicketStorageInited) {
             for (LarkAppInstance ins : instanceMap.values()) {
                 if (ins.getApp().getIsIsv()) {
                     throw new IllegalStateException("cannot find an unique AppTicketStorage for ISV app " + ins.getAppShortName());

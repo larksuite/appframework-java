@@ -41,6 +41,5 @@ public class MergeForwardMessageEvent extends BaseMessageEvent {
 
         // image message
         private String imageKey;
-        private String imageUrl;
     }
 }
