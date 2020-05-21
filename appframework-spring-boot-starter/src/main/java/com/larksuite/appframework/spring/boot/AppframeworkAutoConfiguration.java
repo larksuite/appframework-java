@@ -146,12 +146,14 @@ public class AppframeworkAutoConfiguration implements ApplicationContextAware, B
         appframeworkProperties.getApps().forEach(AppConfiguration::checkConfiguration);
 
         p.getApps().forEach(c -> {
+            OpenApiClient openApiClient;
+            if (appframeworkProperties.getDomain() != null) {
+                openApiClient = new OpenApiClient(new SimpleHttpClient(), appframeworkProperties.getDomain());
+            } else {
+                openApiClient =  new OpenApiClient(new SimpleHttpClient(), Boolean.TRUE == appframeworkProperties.getFeishu());
+            }
 
-            LarkAppInstance ins = new LarkAppInstance(
-                    new InstanceContext(
-                            new App(c),
-                            new OpenApiClient(new SimpleHttpClient(), Boolean.TRUE == appframeworkProperties.getFeishu()))
-            );
+            LarkAppInstance ins = new LarkAppInstance(new InstanceContext(new App(c),openApiClient));
 
             final String appName = ins.getAppShortName();
 

@@ -76,6 +76,9 @@ App ticket is a necessary token for ISV app when fetching app access token.
 If you are building a ISV app, you should implement the storage with Redis or Mysql.
 For custom app, just ignore the configuration item.
 
+For Feishu, set `.feishu ()` to switch to Feishu API server.
+
+For self-hosted instance, set `.domain("example.com")` to switch to your self-hosted API server.
 
 ### 1.4 Register your event handlers to AppEventListener
 
@@ -249,6 +252,7 @@ server:
 larksuite:
   appframework:
     feishu: true
+    # domain: example.com
     notify:
       basePath: /notify
     apps[0]:
@@ -270,7 +274,10 @@ larksuite:
 #### 3.2.1 larksuite.appframework.feishu
 If we set larksuite.appframework.feishu to true, all requests to lark open platform will be under the domain "open.feishu.cn", otherwise "open.larksuite.com" as default.
 
-#### 3.2.2 larksuite.appframework.notify.basePath
+### 3.2.2 larksuite.appframework.domain
+For self-hosted lark instance, set "larksuite.appframework.domain" to your server address.
+
+#### 3.2.3 larksuite.appframework.notify.basePath
 If larksuite.appframework.notify.basePath configured, starter will create a http servlet mapped to the path. 
 The app instances will receive notify from open platform, through the configured base path.
 As "/notify" is set as the base path in the above example, 2 paths will be listening for each app instance: 

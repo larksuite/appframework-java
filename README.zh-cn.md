@@ -74,6 +74,9 @@ LarkAppInstance ins = LarkAppInstanceFactory
 如果要开发ISV应用，开发者需要自己提供一个AppTicketStorage接口的实现。App ticket是用来获取应用access token的必要参数，是开放平台主动推送给应用的。
 所以开发者需要使用一个持久化（通常Redis或Mysql）的实现，保证接收到的app ticket能被存储。对于内部应用，忽略这个配置项即可。
 
+appframework默认对应的是海外lark环境，如果是飞书，则需要手动设置 `.feishu()` 来切换到飞书 API 服务器。
+
+如果是企业私有化部署，可以手动设置 `.domain("example.com")` 切换到私有化部署的 API 服务器。
 
 ### 1.4 注册事件处理器到AppEventListener
 
@@ -249,6 +252,7 @@ server:
 larksuite:
   appframework:
     feishu: true
+    # domain: https://example.com  针对企业私有化部署
     notify:
       basePath: /notify
     apps[0]:
@@ -271,7 +275,10 @@ larksuite:
 
 appframework默认对应的是海外lark环境，飞书用户通过配置"larksuite.appframework.feishu"来选择环境，设置该配置项为"true"，即为国内飞书环境。
 
-#### 3.2.2 larksuite.appframework.notify.basePath
+### 3.2.2 larksuite.appframework.domain
+如果是企业私有化部署，可以通过设置"larksuite.appframework.domain"将请求指向私有化部署环境。
+
+#### 3.2.3 larksuite.appframework.notify.basePath
 
 larksuite.appframework.notify.basePath配置后会开启一个http servlet，接收以该地址开头的所有请求，但只处理固定格式uri的请求。
 如果设置该值为"/notify"，如下两个uri的请求会被处理。如果进程内配置了多个app，就会有多组url的请求被监听。

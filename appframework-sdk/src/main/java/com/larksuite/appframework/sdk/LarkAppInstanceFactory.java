@@ -82,9 +82,8 @@ public class LarkAppInstanceFactory {
             return this;
         }
 
-        @VisibleForTesting
-        LarkAppInstanceBuilder mockLarkOpenPlatformBasePath(String basePath) {
-            this.basePath = basePath;
+        LarkAppInstanceBuilder domain(String domain) {
+            this.basePath = domain;
             return this;
         }
 
