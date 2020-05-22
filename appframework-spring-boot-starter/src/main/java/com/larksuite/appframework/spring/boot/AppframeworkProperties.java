@@ -27,7 +27,7 @@ public class AppframeworkProperties {
 
     private Boolean feishu;
 
-    private String domain;
+    private String apiBasePath;
 
     private Integer cookieDomainParentLevel;
 

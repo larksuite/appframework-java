@@ -82,8 +82,8 @@ public class LarkAppInstanceFactory {
             return this;
         }
 
-        LarkAppInstanceBuilder domain(String domain) {
-            this.basePath = domain;
+        public LarkAppInstanceBuilder apiBasePath(String apiBasePath) {
+            this.basePath = apiBasePath;
             return this;
         }
 

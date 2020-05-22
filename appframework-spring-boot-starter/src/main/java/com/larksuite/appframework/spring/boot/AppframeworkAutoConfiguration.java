@@ -43,8 +43,6 @@ import org.springframework.context.event.EventListener;
 import org.springframework.core.env.Environment;
 
 import javax.servlet.http.HttpServlet;
-import java.lang.reflect.Parameter;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -147,8 +145,8 @@ public class AppframeworkAutoConfiguration implements ApplicationContextAware, B
 
         p.getApps().forEach(c -> {
             OpenApiClient openApiClient;
-            if (appframeworkProperties.getDomain() != null) {
-                openApiClient = new OpenApiClient(new SimpleHttpClient(), appframeworkProperties.getDomain());
+            if (appframeworkProperties.getApiBasePath() != null) {
+                openApiClient = new OpenApiClient(new SimpleHttpClient(), appframeworkProperties.getApiBasePath());
             } else {
                 openApiClient =  new OpenApiClient(new SimpleHttpClient(), Boolean.TRUE == appframeworkProperties.getFeishu());
             }
