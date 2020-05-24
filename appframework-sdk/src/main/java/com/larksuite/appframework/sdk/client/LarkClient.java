@@ -354,10 +354,17 @@ public class LarkClient {
             SendMessageBatchRequest req = new SendMessageBatchRequest();
 
             req.setMsgType(message.getMsgType());
-            req.setContent(MixUtils.newHashMap(message.getContentKey(), message.getContent()));
+
             req.setDepartmentIds(dest.getDepartmentIds());
             req.setOpenIds(dest.getOpenIds());
             req.setUserIds(dest.getUserIds());
+
+            if (message instanceof CardMessage) {
+                req.setUpdateMulti(((CardMessage) message).getUpdateMulti());
+                req.setCard(message.getContent());
+            } else {
+                req.setContent(MixUtils.newHashMap(message.getContentKey(), message.getContent()));
+            }
 
             SendMessageBatchResponse resp = openApiClient.sendMessageBatch(tenantAccessToken, req);
             BatchSendChatMessageResult result = new BatchSendChatMessageResult();
@@ -365,6 +372,7 @@ public class LarkClient {
             result.setInvalidDepartmentIds(resp.getData().getInvalidDepartmentIds());
             result.setInvalidOpenIds(resp.getData().getInvalidOpenIds());
             result.setInvalidUserIds(resp.getData().getInvalidUserIds());
+
             return result;
         }, tenantKey);
 
