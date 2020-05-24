@@ -27,4 +27,14 @@ public class SendMessageBatchRequest {
 
     private Object content;
 
+    /**
+     * for card message
+     */
+    private Boolean updateMulti;
+
+    /**
+     * for card message
+     */
+    private Object card;
+
 }
