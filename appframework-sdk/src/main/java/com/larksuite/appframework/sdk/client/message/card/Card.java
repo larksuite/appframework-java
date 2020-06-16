@@ -80,7 +80,7 @@ public class Card implements CardComponent {
         }
 
         if (i18nElements != null) {
-            r.put("i18nElements", i18nElements.entrySet().stream().collect(Collectors.toMap(
+            r.put("i18n_elements", i18nElements.entrySet().stream().collect(Collectors.toMap(
                     Map.Entry::getKey,
                     e -> e.getValue().stream().map(CardComponent::toObjectForJson).collect(Collectors.toList()))
             ));
