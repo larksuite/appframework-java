@@ -64,6 +64,7 @@ public class LarkNotifyReceiver extends HttpServlet implements ApplicationContex
         }
 
         try {
+            resp.setContentType("application/json;charset=UTF-8");
             PrintWriter writer = resp.getWriter();
             String respData = "";
             if (CALLBACK_EVENT_PATH.equals(type)) {
