@@ -152,6 +152,22 @@ public class OpenApiClient {
         }
     }
 
+    public String genericPost(String path, String tenantAccessToken, String postData) throws LarkClientException {
+        try {
+            return httpClient.doPostJson(basePath + path, 3000, 5000, createHeaderWithAuthorization(tenantAccessToken), postData);
+        } catch (HttpException e) {
+            throw translateToLarkClientException(e);
+        }
+    }
+
+    public String genericGet(String path, String tenantAccessToken) throws LarkClientException {
+        try {
+            return httpClient.doGet(basePath + path, 3000, 5000, createHeaderWithAuthorization(tenantAccessToken));
+        } catch (HttpException e) {
+            throw translateToLarkClientException(e);
+        }
+    }
+
     private static <T extends BaseResponse> T transCodeToException(T t) throws LarkClientException {
         if (t.getCode() == 0) {
             return t;
