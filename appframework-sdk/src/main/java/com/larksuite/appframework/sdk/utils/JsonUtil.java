@@ -52,6 +52,10 @@ public class JsonUtil {
 
 
     public static String larkFormatToJsonString(Object o) {
+        if (o instanceof String) {
+            return (String)o;
+        }
+
         try {
             return larkJsonFormatObjectMapper.writeValueAsString(o);
         } catch (JsonProcessingException e) {
