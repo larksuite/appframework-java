@@ -13,7 +13,7 @@
     <groupId>com.larksuite.appframework</groupId>
     <artifactId>appframework-parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.9</version>
+    <version>1.0.10</version>
     <name>larksuite-appframework-sdk-java</name>
     <url>https://open.larksuite.com/</url>
 
@@ -24,7 +24,7 @@
 
 
     <properties>
-        <appframework.version>1.0.9</appframework.version>
+        <appframework.version>1.0.10</appframework.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
     </properties>

@@ -173,38 +173,9 @@ public class LarkClient {
         doDisbandChat(chatId, tenantKey);
     }
 
-    public String genericPost(String path, String postData) throws LarkClientException {
-        checkAppType(false);
-        return retryIfTenantAccessTokenInvalid(() -> {
-            final String tenantAccessToken = getTenantAccessTokenOrException(null);
-            return openApiClient.genericPost(path, tenantAccessToken, postData);
-        }, null);
+    public OpenApiClient getOpenApiClient() {
+        return openApiClient;
     }
-
-    public String genericPostIsv(String path, String postData, String tenantKey) throws LarkClientException {
-        checkAppType(true);
-        return retryIfTenantAccessTokenInvalid(() -> {
-            final String tenantAccessToken = getTenantAccessTokenOrException(tenantKey);
-            return openApiClient.genericPost(path, tenantAccessToken, postData);
-        }, tenantKey);
-    }
-
-    public String genericGet(String path) throws LarkClientException {
-        checkAppType(false);
-        return retryIfTenantAccessTokenInvalid(() -> {
-            final String tenantAccessToken = getTenantAccessTokenOrException(null);
-            return openApiClient.genericGet(path, tenantAccessToken);
-        }, null);
-    }
-
-    public String genericGetIsv(String path, String tenantKey) throws LarkClientException {
-        checkAppType(true);
-        return retryIfTenantAccessTokenInvalid(() -> {
-            final String tenantAccessToken = getTenantAccessTokenOrException(tenantKey);
-            return openApiClient.genericGet(path, tenantAccessToken);
-        }, tenantKey);
-    }
-
 
     private GroupInfoResult doFetchGroupInfo(String chatId, String tenantKey) throws LarkClientException {
 
