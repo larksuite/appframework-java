@@ -76,6 +76,48 @@ public class SimpleHttpClient implements HttpClient {
         }
     }
 
+    @Override
+    public String doDelete(String url, int connectTimeout, int readTimeout, Map<String, String> headers) throws HttpException {
+        HttpURLConnection conn = null;
+        try {
+            conn = newHttpConnection(url, connectTimeout, readTimeout, headers);
+            conn.setDoOutput(true);
+            conn.setRequestMethod("DELETE");
+            InputStream is = getResultDataInputStream(conn);
+            return streamAsString(is);
+        } catch (IOException ioe) {
+            throw new HttpException(ioe);
+        } finally {
+            if (conn != null) {
+                conn.disconnect();
+            }
+        }
+    }
+
+    @Override
+    public String doPatch(String url, int connectTimeout, int readTimeout, Map<String, String> headers, String data) throws HttpException {
+        HttpURLConnection conn = null;
+        try {
+            conn = newHttpConnection(url, connectTimeout, readTimeout, headers);
+            conn.setDoOutput(true);
+            conn.setRequestProperty("X-HTTP-Method-Override", "PATCH");
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Content-Type", "application/json");
+            try (OutputStream os = conn.getOutputStream()) {
+                os.write(data.getBytes(StandardCharsets.UTF_8));
+            }
+
+            InputStream is = getResultDataInputStream(conn);
+            return streamAsString(is);
+        } catch (IOException ioe) {
+            throw new HttpException(ioe);
+        } finally {
+            if (conn != null) {
+                conn.disconnect();
+            }
+        }
+    }
+
     private String doRequest(String url, int connectTimeout, int readTimeout, Map<String, String> header, boolean isPost, String requestData) throws HttpException {
 
         HttpURLConnection conn = null;

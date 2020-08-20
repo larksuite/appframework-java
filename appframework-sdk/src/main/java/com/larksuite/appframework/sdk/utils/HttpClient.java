@@ -23,6 +23,10 @@ public interface HttpClient {
 
     InputStream doGetFile(String url, int connectTimeout, int readTimeout, Map<String, String> headers) throws HttpException;
 
+    String doDelete(String url, int connectTimeout, int readTimeout, Map<String, String> headers) throws HttpException;
+
+    String doPatch(String url, int connectTimeout, int readTimeout, Map<String, String> headers, String data) throws HttpException;
+
     abstract class Field {
 
         String fieldName;
