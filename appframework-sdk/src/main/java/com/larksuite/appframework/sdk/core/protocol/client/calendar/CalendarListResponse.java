@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.List;
+
 /**
  * @author xiaobozhang@aliyun.com
  * @since 2020/8/18
@@ -15,14 +17,9 @@ import lombok.ToString;
 @ToString
 public class CalendarListResponse extends BaseResponse {
 
-    private Data data;
-
-    @Getter
-    @Setter
-    @ToString
-    public static class Data {
-        private Item item;
-    }
+    private List<Item> data;
+    @JsonProperty("sync_token")
+    private String syncToken;
 
     @Getter
     @Setter
@@ -33,5 +30,7 @@ public class CalendarListResponse extends BaseResponse {
         String description;
         @JsonProperty("default_access_role")
         String defaultAccessRole;
+        @JsonProperty("is_private")
+        boolean isPrivate;
     }
 }

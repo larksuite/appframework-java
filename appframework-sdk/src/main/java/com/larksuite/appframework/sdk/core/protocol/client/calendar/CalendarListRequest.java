@@ -15,7 +15,7 @@ import lombok.ToString;
 @ToString
 public class CalendarListRequest extends BaseRequest {
     @JsonProperty("max_results")
-    private int maxResults;
+    private int maxResults = 1000;
     @JsonProperty("page_token")
     private String pageToken;
     @JsonProperty("sync_token")
