@@ -13,7 +13,9 @@ import com.larksuite.appframework.sdk.client.message.card.objects.Text;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 public class Note extends Module {
 
     private List<CardComponent> elements;

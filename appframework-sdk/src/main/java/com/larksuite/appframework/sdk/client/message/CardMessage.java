@@ -14,6 +14,9 @@ public class CardMessage implements Message {
 
     private Boolean updateMulti;
 
+    public CardMessage(){
+    }
+
     public CardMessage(Object content) {
         this.content = content;
     }

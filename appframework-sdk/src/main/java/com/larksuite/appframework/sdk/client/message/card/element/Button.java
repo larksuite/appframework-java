@@ -12,7 +12,9 @@ import com.larksuite.appframework.sdk.client.message.card.objects.Text;
 import com.larksuite.appframework.sdk.client.message.card.objects.Url;
 
 import java.util.Map;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 public class Button extends ActionElement {
 
     public enum StyleType {

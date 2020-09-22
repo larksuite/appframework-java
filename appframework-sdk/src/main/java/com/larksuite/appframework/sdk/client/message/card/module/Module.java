@@ -8,7 +8,9 @@ package com.larksuite.appframework.sdk.client.message.card.module;
 
 import com.larksuite.appframework.sdk.client.message.card.AbstractTagged;
 import com.larksuite.appframework.sdk.client.message.card.CardComponent;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 public abstract class Module extends AbstractTagged implements CardComponent {
 
     public Module(String tag) {

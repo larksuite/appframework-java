@@ -11,7 +11,9 @@ import com.larksuite.appframework.sdk.client.message.card.objects.Confirm;
 import com.larksuite.appframework.sdk.client.message.card.objects.Text;
 
 import java.util.Map;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 public class DatePicker extends ActionElement {
 
     private Text placeholder;

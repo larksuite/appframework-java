@@ -40,7 +40,10 @@ public class OpenApiClient {
     private static final String SendMessageBatchPath = "/open-apis/message/v4/batch_send/";
     private static final String UploadImagePath = "/open-apis/image/v4/put/";
     private static final String FetchImagePath = "/open-apis/image/v4/get";
-
+    /**
+     * bot info
+     */
+    private static final String FetchBOTInfoPath = "/open-apis/bot/v3/info/";
     /**
      * chat
      */
@@ -90,6 +93,10 @@ public class OpenApiClient {
                     createHeaderWithAuthorization(tenantAccessToken), fl);
 
         }, UploadImageResponse.class);
+    }
+
+    public FetchBotInfoResponse fetchBotInfo(String tenantAccessToken) throws LarkClientException {
+        return call(() -> httpClient.doGet(basePath + FetchBOTInfoPath, 3000, 3000, createHeaderWithAuthorization(tenantAccessToken)), FetchBotInfoResponse.class);
     }
 
     public FetchChatInfoResponse fetchChatInfo(String tenantAccessToken, FetchChatInfoRequest req) throws LarkClientException {

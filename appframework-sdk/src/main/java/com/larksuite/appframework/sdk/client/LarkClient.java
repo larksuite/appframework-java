@@ -9,6 +9,7 @@ package com.larksuite.appframework.sdk.client;
 import com.larksuite.appframework.sdk.core.protocol.*;
 import com.larksuite.appframework.sdk.core.protocol.common.Group;
 import com.larksuite.appframework.sdk.core.protocol.common.I18nText;
+import com.larksuite.appframework.sdk.core.protocol.common.BotInfo;
 import com.larksuite.appframework.sdk.core.protocol.common.User;
 import com.larksuite.appframework.sdk.exception.LarkClientException;
 import com.larksuite.appframework.sdk.client.message.CardMessage;
@@ -53,6 +54,13 @@ public class LarkClient {
         this.appId = this.instanceContext.getApp().getAppId();
     }
 
+    public InstanceContext getInstanceContext() {
+        return instanceContext;
+    }
+
+    public String getAppId() {
+        return appId;
+    }
 
     /**
      * send chat message as ISV
@@ -166,6 +174,13 @@ public class LarkClient {
     public void disbandChat(String chatId) throws LarkClientException {
         checkAppType(false);
         doDisbandChat(chatId, null);
+    }
+
+    public BotInfo doFetchRotInfo(String tenantKey) throws LarkClientException {
+        return retryIfTenantAccessTokenInvalid(()->{
+            final String tenantAccessToken = getTenantAccessTokenOrException(tenantKey);
+            return openApiClient.fetchBotInfo(tenantAccessToken).getBot();
+        },tenantKey);
     }
 
     public void disbandChatIsv(String chatId, String tenantKey) throws LarkClientException {
