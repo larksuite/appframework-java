@@ -6,6 +6,9 @@
 
 package com.larksuite.appframework.sdk.utils;
 
+import lombok.extern.slf4j.Slf4j;
+import okhttp3.*;
+
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -13,8 +16,17 @@ import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
-
+import java.util.concurrent.TimeUnit;
+@Slf4j
 public class SimpleHttpClient implements HttpClient {
+
+    private OkHttpClient okHttpClient;
+
+    public SimpleHttpClient() {
+        okHttpClient = new okhttp3.OkHttpClient.Builder().connectTimeout(5, TimeUnit.SECONDS)
+                .readTimeout(5, TimeUnit.SECONDS).writeTimeout(5, TimeUnit.SECONDS)
+                .retryOnConnectionFailure(true).build();
+    }
 
     @Override
     public String doPostJson(String url, int connectTimeout, int readTimeout, Map<String, String> headers, String data) throws HttpException {
@@ -73,6 +85,43 @@ public class SimpleHttpClient implements HttpClient {
             if (conn != null) {
                 conn.disconnect();
             }
+        }
+    }
+
+    @Override
+    public String doDelete(String url, int connectTimeout, int readTimeout, Map<String, String> headers) throws HttpException {
+        HttpURLConnection conn = null;
+        try {
+            conn = newHttpConnection(url, connectTimeout, readTimeout, headers);
+            conn.setDoOutput(true);
+            conn.setRequestMethod("DELETE");
+            InputStream is = getResultDataInputStream(conn);
+            return streamAsString(is);
+        } catch (IOException ioe) {
+            throw new HttpException(ioe);
+        } finally {
+            if (conn != null) {
+                conn.disconnect();
+            }
+        }
+    }
+
+    @Override
+    public String doPatch(String url, int connectTimeout, int readTimeout, Map<String, String> headers, String data) throws HttpException {
+        Request.Builder builder = new Request.Builder();
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), data);
+
+        Request request = builder.url(url).headers(Headers.of(headers)).patch(requestBody).build();
+        Call call = okHttpClient.newCall(request);
+        try {
+            Response response = call.execute();
+            if (response.body() == null) {
+                throw new HttpException(response.code(), "response body is empty");
+            }
+            return response.body().string();
+        } catch (IOException e) {
+            log.info(e.getMessage(), e);
+            throw new HttpException(e);
         }
     }
 
