@@ -7,6 +7,7 @@
 package com.larksuite.appframework.sdk.client;
 
 import com.larksuite.appframework.sdk.core.protocol.*;
+import com.larksuite.appframework.sdk.core.protocol.client.bot.BotInfoResponse;
 import com.larksuite.appframework.sdk.core.protocol.common.Group;
 import com.larksuite.appframework.sdk.core.protocol.common.I18nText;
 import com.larksuite.appframework.sdk.core.protocol.common.BotInfo;
@@ -176,16 +177,28 @@ public class LarkClient {
         doDisbandChat(chatId, null);
     }
 
-    public BotInfo doFetchRotInfo(String tenantKey) throws LarkClientException {
-        return retryIfTenantAccessTokenInvalid(()->{
-            final String tenantAccessToken = getTenantAccessTokenOrException(tenantKey);
-            return openApiClient.fetchBotInfo(tenantAccessToken).getBot();
-        },tenantKey);
-    }
-
     public void disbandChatIsv(String chatId, String tenantKey) throws LarkClientException {
         checkAppType(true);
         doDisbandChat(chatId, tenantKey);
+    }
+
+    public BotInfo doFetchBotInfo() throws LarkClientException {
+        checkAppType(false);
+        return doFetchBotInfoIsv(null);
+    }
+
+    public BotInfo doFetchBotInfoIsv(String tenantKey) throws LarkClientException {
+        return retryIfTenantAccessTokenInvalid(()->{
+            final String tenantAccessToken = getTenantAccessTokenOrException(tenantKey);
+            BotInfoResponse.Bot bot = openApiClient.botClient().info(tenantAccessToken).getBot();
+            BotInfo botInfo = new BotInfo();
+            botInfo.setActivateStatus(bot.getActivateStatus());
+            botInfo.setAppName(bot.getAppName());
+            botInfo.setAvatarUrl(bot.getAvatarUrl());
+            botInfo.setIpWhiteList(bot.getIpWhiteList());
+            botInfo.setOpenId(bot.getOpenId());
+            return botInfo;
+        },tenantKey);
     }
 
     public OpenApiClient getOpenApiClient() {

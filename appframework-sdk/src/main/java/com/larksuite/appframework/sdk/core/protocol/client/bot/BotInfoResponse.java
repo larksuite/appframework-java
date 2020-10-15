@@ -24,7 +24,7 @@ public class BotInfoResponse extends BaseResponse {
     @ToString
     public static class Bot {
         @JsonProperty("activate_status")
-        private Double activateStatus;
+        private Integer activateStatus;
         @JsonProperty("app_name")
         private String appName;
         @JsonProperty("avatar_url")
