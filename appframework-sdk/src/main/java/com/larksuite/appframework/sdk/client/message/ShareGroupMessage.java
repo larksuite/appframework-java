@@ -25,7 +25,8 @@ public class ShareGroupMessage implements Message {
         return rootId;
     }
 
-
+    public ShareGroupMessage() {
+    }
 
     @Override
     public String getMsgType() {

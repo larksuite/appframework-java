@@ -12,6 +12,8 @@ import com.larksuite.appframework.sdk.utils.MixUtils;
 import java.util.Map;
 
 public class Header implements CardComponent {
+    public Header() {
+    }
 
     private Text title;
 

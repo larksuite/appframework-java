@@ -12,6 +12,9 @@ public class ImageMessage implements Message {
 
     private String rootId;
 
+    public ImageMessage(){
+    }
+
     public ImageMessage(String imageKey) {
         this.imageKey = imageKey;
     }
@@ -38,5 +41,13 @@ public class ImageMessage implements Message {
     @Override
     public Object getContent() {
         return imageKey;
+    }
+
+    public String getImageKey() {
+        return imageKey;
+    }
+
+    public void setImageKey(String imageKey) {
+        this.imageKey = imageKey;
     }
 }

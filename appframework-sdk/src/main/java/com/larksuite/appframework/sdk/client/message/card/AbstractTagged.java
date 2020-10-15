@@ -10,6 +10,9 @@ public class AbstractTagged implements Tagged {
 
     private String tag;
 
+    public AbstractTagged() {
+    }
+
     public AbstractTagged(String tag) {
         this.tag = tag;
     }

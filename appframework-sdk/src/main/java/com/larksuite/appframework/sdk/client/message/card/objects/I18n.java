@@ -8,7 +8,9 @@ package com.larksuite.appframework.sdk.client.message.card.objects;
 
 import com.larksuite.appframework.sdk.client.message.card.CardComponent;
 import com.larksuite.appframework.sdk.utils.MixUtils;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 public class I18n implements CardComponent {
 
     private String zhCn;

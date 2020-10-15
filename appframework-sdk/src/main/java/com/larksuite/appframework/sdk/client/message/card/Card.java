@@ -25,6 +25,9 @@ public class Card implements CardComponent {
 
     private List<String> openIds;
 
+    public Card() {
+    }
+
     public Card(Config config, Header header) {
         this.config = config;
         this.header = header;

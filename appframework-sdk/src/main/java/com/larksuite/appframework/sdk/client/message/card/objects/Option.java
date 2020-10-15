@@ -10,7 +10,9 @@ import com.larksuite.appframework.sdk.client.message.card.CardComponent;
 import com.larksuite.appframework.sdk.utils.MixUtils;
 
 import java.util.Map;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 public class Option implements CardComponent {
 
     private String value;

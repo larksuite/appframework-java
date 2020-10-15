@@ -23,6 +23,13 @@ public abstract class ActionElement extends Element {
         CardActionUtils.setActionMethodName(value, methodName);
     }
 
+    public ActionElement(){
+    }
+
+    public ActionElement(String tag) {
+        super(tag);
+    }
+
     public String getMethodName() {
         return methodName;
     }
