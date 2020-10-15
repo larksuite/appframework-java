@@ -16,6 +16,8 @@ public class TextMessage implements Message {
         this.textContent = textContent;
     }
 
+    public TextMessage() {
+    }
 
     public void setRootId(String rootId) {
         this.rootId = rootId;

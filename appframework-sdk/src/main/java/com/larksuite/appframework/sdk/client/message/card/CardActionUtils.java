@@ -11,6 +11,8 @@ import com.larksuite.appframework.sdk.core.protocol.card.CardEvent;
 import java.util.Map;
 
 public class CardActionUtils {
+    public CardActionUtils() {
+    }
 
     public static final String ACTION_METHOD_NAME = "__METHOD__";
 

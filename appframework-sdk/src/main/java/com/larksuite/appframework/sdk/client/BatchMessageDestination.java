@@ -6,6 +6,9 @@
 
 package com.larksuite.appframework.sdk.client;
 
+import com.larksuite.appframework.sdk.core.protocol.common.User;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,5 +23,14 @@ public class BatchMessageDestination {
     private List<String> openIds;
 
     private List<String> userIds;
+
+    public void setUsers(List<User> users){
+      List<String> cache =  users.stream().map(user->user.getUserId()).collect(Collectors.toList());
+      if(userIds!=null){
+          userIds.addAll(cache);
+      }else{
+          userIds = cache;
+      }
+    }
 
 }

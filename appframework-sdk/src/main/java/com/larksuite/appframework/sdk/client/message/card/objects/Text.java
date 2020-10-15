@@ -10,7 +10,9 @@ import com.larksuite.appframework.sdk.client.message.card.CardComponent;
 
 import java.util.HashMap;
 import java.util.Map;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 public class Text implements CardComponent {
 
     public enum Mode {

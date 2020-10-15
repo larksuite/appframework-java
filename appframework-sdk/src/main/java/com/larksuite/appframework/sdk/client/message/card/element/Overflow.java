@@ -13,7 +13,9 @@ import com.larksuite.appframework.sdk.client.message.card.objects.Option;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 public class Overflow extends ActionElement {
 
     private List<Option> options;

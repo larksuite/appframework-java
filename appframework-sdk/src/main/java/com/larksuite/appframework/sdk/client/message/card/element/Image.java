@@ -8,7 +8,9 @@ package com.larksuite.appframework.sdk.client.message.card.element;
 
 import com.larksuite.appframework.sdk.utils.MixUtils;
 import com.larksuite.appframework.sdk.client.message.card.objects.Text;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 public class Image extends Element {
 
     private String imgKey;

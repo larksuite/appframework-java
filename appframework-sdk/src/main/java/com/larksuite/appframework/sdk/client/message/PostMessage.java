@@ -12,6 +12,9 @@ public class PostMessage implements Message {
 
     private Object content;
 
+    public PostMessage(){
+    }
+
     public PostMessage(Object content) {
         this.content = content;
     }

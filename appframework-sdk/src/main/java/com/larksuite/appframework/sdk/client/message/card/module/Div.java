@@ -14,7 +14,9 @@ import com.larksuite.appframework.sdk.client.message.card.objects.Text;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 public class Div extends Module {
 
     private Text text;

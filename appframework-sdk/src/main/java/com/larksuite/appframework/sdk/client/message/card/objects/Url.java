@@ -8,7 +8,9 @@ package com.larksuite.appframework.sdk.client.message.card.objects;
 
 import com.larksuite.appframework.sdk.client.message.card.CardComponent;
 import com.larksuite.appframework.sdk.utils.MixUtils;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 public class Url implements CardComponent {
 
     private String url;

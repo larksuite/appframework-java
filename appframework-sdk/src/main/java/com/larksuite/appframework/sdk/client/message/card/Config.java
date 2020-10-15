@@ -9,6 +9,8 @@ package com.larksuite.appframework.sdk.client.message.card;
 import com.larksuite.appframework.sdk.utils.MixUtils;
 
 public class Config implements CardComponent {
+    public Config() {
+    }
 
     private boolean wideScreenMode;
 

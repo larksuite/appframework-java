@@ -10,7 +10,7 @@ import com.larksuite.appframework.sdk.client.message.card.AbstractTagged;
 import com.larksuite.appframework.sdk.client.message.card.CardComponent;
 
 public abstract class Element extends AbstractTagged implements CardComponent {
-
+    public Element(){}
     public Element(String tag) {
         super(tag);
     }
