@@ -40,28 +40,6 @@ public class OpenApiClient {
     public static final int DEFAULT_READ_TIMEOUT = 5000;
 
 
-    /**
-     * message
-     */
-    private static final String SendMessagePath = "/open-apis/message/v4/send/";
-    private static final String SendMessageBatchPath = "/open-apis/message/v4/batch_send/";
-    private static final String UploadImagePath = "/open-apis/image/v4/put/";
-    private static final String FetchImagePath = "/open-apis/image/v4/get";
-    /**
-     * bot info
-     */
-    private static final String FetchBOTInfoPath = "/open-apis/bot/v3/info/";
-    /**
-     * chat
-     */
-    private static final String FetchChatInfoPath = "/open-apis/chat/v4/info/";
-    private static final String FetchChatListPath = "/open-apis/chat/v4/list/";
-    private static final String UpdateChatInfoPath = "/open-apis/chat/v4/update/";
-    private static final String CreateChatPath = "/open-apis/chat/v4/create/";
-    private static final String AddUserToChatPath = "/open-apis/chat/v4/chatter/add/";
-    private static final String DeleteUserFromChatPath = "/open-apis/chat/v4/chatter/delete/";
-    private static final String DisbandChatPath = "/open-apis/chat/v4/disband/";
-
     private static final String MiniProgramLoginValidatePath = "/open-apis/mina/v2/tokenLoginValidate";
 
 
@@ -89,17 +67,8 @@ public class OpenApiClient {
         return getInstance(BotClient.class);
     }
 
-
     public CalendarClient calendarClient() {
         return getInstance(CalendarClient.class);
-
-    public FetchBotInfoResponse fetchBotInfo(String tenantAccessToken) throws LarkClientException {
-        return call(() -> httpClient.doGet(basePath + FetchBOTInfoPath, 3000, 3000, createHeaderWithAuthorization(tenantAccessToken)), FetchBotInfoResponse.class);
-    }
-
-    public FetchChatInfoResponse fetchChatInfo(String tenantAccessToken, FetchChatInfoRequest req) throws LarkClientException {
-        return call(() -> httpClient.doGet(buildGetUrl(basePath + FetchChatInfoPath, req), 3000, 3000, createHeaderWithAuthorization(tenantAccessToken)), FetchChatInfoResponse.class);
-
     }
 
     public ContactClient contactClient() {

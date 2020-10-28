@@ -16,7 +16,7 @@ public class BotInfo {
      * 3: 安装后待启用, 4: 升级待启用,
      * 5: license过期停用, 6: Lark套餐到期或降级停用,
      */
-    int activateStatus;
+    Integer activateStatus;
     /**
      * 	app 名称
      */
