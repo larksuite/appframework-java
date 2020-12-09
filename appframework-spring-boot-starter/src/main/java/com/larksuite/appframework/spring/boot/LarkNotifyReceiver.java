@@ -43,7 +43,8 @@ public class LarkNotifyReceiver extends HttpServlet implements ApplicationContex
         {
             String requestUri = req.getRequestURI();
             String basePath = req.getServletPath();
-            path = fixSlashes(requestUri.substring(basePath.length()));
+            String contextPath = req.getContextPath();
+            path = fixSlashes(requestUri.substring(contextPath.length() + basePath.length()));
         }
 
         String[] parts = path.split("/");
