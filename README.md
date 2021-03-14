@@ -1,4 +1,4 @@
-# appframework-java
+# appframework-java [Deprecated]
 
 Appframework-java is a java Software Development Kit which provide java api for lark app development. 
 It's also a lightweight framework for lark open platform callback event processing, 
