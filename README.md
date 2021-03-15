@@ -1,3 +1,5 @@
+**Deprecated, please use [oapi-sdk-java](https://github.com/larksuite/oapi-sdk-java)**
+
 # appframework-java [Deprecated]
 
 Appframework-java is a java Software Development Kit which provide java api for lark app development. 
