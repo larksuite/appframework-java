@@ -1,3 +1,5 @@
+**已过时，请使用 [oapi-sdk-java](https://github.com/larksuite/oapi-sdk-java)**
+
 # appframework-java
 
 Appframework-java 是飞书开放平台应用开发接口Java版本SDK，用来帮助开发者快速搭建飞书app。
